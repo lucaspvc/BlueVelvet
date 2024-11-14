@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueVelvet Music Store - Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="register-container">
+        <h1>BlueVelvet Music Store</h1>
+        <h2>Register</h2>
+        <form id="registerForm">
+            <input type="name" id="name" placeholder="Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" minlength="8" required>
+            <select id="role" required>
+                <option value="">Select Role</option>
+                <option value="Administrador">Administrador</option>
+                <option value="Diretor de vendas">Diretor de vendas</option>
+                <option value="Editor">Editor</option>
+                <option value="Assistente">Assistente</option>
+                <option value="Gestor de expedição">Gestor de expedição</option>
+            </select>
+            <button type="submit">Register</button>
+            <p class="error-message" id="registerErrorMessage"></p>
+        </form>
+        <p>Already have an account? <a href="index.html">Login</a></p>
+    </div>
+
+    <script src="register.js"></script>
+</body>
+</html>
