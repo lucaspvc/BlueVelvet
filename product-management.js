@@ -78,7 +78,13 @@ document.getElementById("prevPage").addEventListener("click", () => {
 
 document.getElementById("sortOptions").addEventListener("change", (event) => {
     const sortBy = event.target.value;
-    products.sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
+    products.sort((a, b) => {
+        if (sortBy === "id") {
+            return a[sortBy] - b[sortBy]; // Comparação numérica
+        } else {
+            return a[sortBy].localeCompare(b[sortBy]); // Comparação alfabética
+        }
+    });
     renderProducts();
 });
 
