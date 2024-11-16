@@ -36,8 +36,6 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             localStorage.setItem('rememberedPassword', password);
         }
         
-        alert(`Login successful! Welcome, ${user.name} (${user.role}).`);
-        
         // Verifica se o usuário tem permissão para acessar o painel de gestão
         if (["Administrador", "Diretor de vendas", "Gestor de expedição"].includes(user.role)) {
             alert(`Login successful! Welcome, ${user.name} (${user.role}).`);
