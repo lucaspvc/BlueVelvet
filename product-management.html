@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+</head>
+<body>
+    <h1>Bem-vindo ao Painel de Gestão de Produtos</h1>
+    <p>Somente administradores, diretores de vendas e gestores de expedição podem acessar esta página.</p>
+
+    <!-- Exemplo de listagem de produtos -->
+    <h2>Lista de Produtos</h2>
+    <ul>
+        <li>Produto 1</li>
+        <li>Produto 2</li>
+        <li>Produto 3</li>
+    </ul>
+
+    <button onclick="logout()">Logout</button>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('rememberedEmail');
+            localStorage.removeItem('rememberedPassword');
+            alert("Você saiu com sucesso!");
+            window.location.href = "index.html";    
+        }
+    </script>
+</body>
+</html>
