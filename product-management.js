@@ -1,26 +1,14 @@
 // Obtém os dados do banco de dados (usuários)
 const users = JSON.parse(localStorage.getItem('users'));
 
-// Lista inicial de produtos
-const initialProducts = [
-    { id: 1, image: "images/img1.jpg", name: "Guided by Voices - Bee Thousand", brand: "Matador Records", category: "CD" },
-    { id: 2, image: "images/img2.jpg", name: "Pavement - Slanted and Enchanted", brand: "Domino Recording Co", category: "MP3" },
-    { id: 3, image: "images/img3.jpg", name: "Neutral Milk Hotel T-Shirt", brand: "Merge Records", category: "T-Shirt" },
-    { id: 4, image: "images/img4.jpg", name: "Indie Rock 101", brand: "Music Books", category: "Book" },
-    { id: 5, image: "images/img5.jpg", name: "The Jesus and Mary Chain Poster", brand: "Art & Prints", category: "Poster" },
-    { id: 6, image: "images/img6.jpg", name: "Album XYZ", brand: "Brand 1", category: "Vinyl" },
-    { id: 7, image: "images/img7.jpg", name: "Tote Bag", brand: "Accessories", category: "Merchandise" },
-    { id: 8, image: "images/img8.jpg", name: "Headphones", brand: "Tech", category: "Electronics" },
-    { id: 9, image: "images/img9.jpg", name: "Guitar Picks", brand: "Music Accessories", category: "Accessories" },
-    { id: 10, image: "images/img10.jpg", name: "Band Poster", brand: "Art & Prints", category: "Poster" },
-];
+// Obtém os dados do banco de dados (produtos)
+let products = JSON.parse(localStorage.getItem('products'));
+const initialProducts = JSON.parse(localStorage.getItem('products'));
 
 // Carrega produtos do localStorage ou inicializa com a lista padrão
 if (!localStorage.getItem("products")) {
     localStorage.setItem("products", JSON.stringify(initialProducts));
 }
-
-let products = JSON.parse(localStorage.getItem("products"));
 
 // Verifica autenticação
 const currentUser = JSON.parse(localStorage.getItem("users"));
@@ -29,16 +17,89 @@ const currentUser = JSON.parse(localStorage.getItem("users"));
 document.getElementById("welcomeMessage").textContent = `Welcome, ${currentUser.name} (${currentUser.role})`;
 
 let currentPage = 1;
-const productsPerPage = 10;
+const productsPerPage = 5;
 
-function renderProducts() {
+// Função para calcular os produtos da página atual
+function getProductsForCurrentPage() {
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = currentPage * productsPerPage;
+    return products.slice(startIndex, endIndex);
+}
+
+function renderPagination(totalPages) {
+    const paginationContainer = document.querySelector(".pagination");
+    paginationContainer.innerHTML = ""; // Limpa apenas a parte de paginação
+
+    // Botão "Anterior"
+    const prevButton = document.createElement("button");
+    prevButton.id = "prevPage";
+    prevButton.className = "pagination-button";
+    prevButton.textContent = "<";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderProducts();
+            renderPagination(totalPages);
+        }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    // Números das páginas com ocultação dinâmica
+    for (let i = 1; i <= totalPages; i++) {
+        if (
+            i === 1 || // Sempre mostrar a primeira página
+            i === totalPages || // Sempre mostrar a última página
+            i === currentPage || // Mostrar a página atual
+            i === currentPage - 1 || // Mostrar a anterior da atual
+            i === currentPage + 1 // Mostrar a próxima da atual
+        ) {
+            const pageNumber = document.createElement("span");
+            pageNumber.textContent = i;
+            pageNumber.className = "page-number" + (i === currentPage ? " active" : "");
+            if (i !== currentPage) {
+                pageNumber.addEventListener("click", () => {
+                    currentPage = i;
+                    renderProducts();
+                    renderPagination(totalPages);
+                });
+            }
+            paginationContainer.appendChild(pageNumber);
+        } else if (
+            i === currentPage - 2 || // Exibir "..." antes das páginas intermediárias
+            i === currentPage + 2
+        ) {
+            const dots = document.createElement("span");
+            dots.textContent = "...";
+            dots.className = "dots";
+            paginationContainer.appendChild(dots);
+        }
+    }
+
+    // Botão "Próximo"
+    const nextButton = document.createElement("button");
+    nextButton.id = "nextPage";
+    nextButton.className = "pagination-button";
+    nextButton.textContent = ">";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderProducts();
+            renderPagination(totalPages);
+        }
+    });
+    paginationContainer.appendChild(nextButton);
+}
+
+function renderProducts(filteredProducts = products) {
+    const productsToDisplay = getProductsForCurrentPage();
     const tableBody = document.getElementById("productTableBody");
     tableBody.innerHTML = "";
 
-    // Paginação
     const start = (currentPage - 1) * productsPerPage;
     const end = start + productsPerPage;
-    const paginatedProducts = products.slice(start, end);
+    const paginatedProducts = filteredProducts.slice(start, end);
 
     paginatedProducts.forEach(product => {
         const row = document.createElement("tr");
@@ -57,9 +118,11 @@ function renderProducts() {
         tableBody.appendChild(row);
     });
 
-    document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${Math.ceil(products.length / productsPerPage)}`;
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    renderPagination(totalPages); // Renderiza a navegação de páginas
 }
 
+// Inicialização
 renderProducts();
 
 document.getElementById("nextPage").addEventListener("click", () => {
@@ -76,21 +139,33 @@ document.getElementById("prevPage").addEventListener("click", () => {
     }
 });
 
-document.getElementById("sortOptions").addEventListener("change", (event) => {
+document.getElementById("sortOptions").removeEventListener("change", sortProducts);
+document.getElementById("sortOptions").addEventListener("change", sortProducts);
+
+products = JSON.parse(localStorage.getItem("products")); // Recarrega os dados
+renderProducts();
+
+
+function sortProducts(event) {
     const sortBy = event.target.value;
+
     products.sort((a, b) => {
+        const valueA = a[sortBy] || ""; // Valor padrão vazio
+        const valueB = b[sortBy] || "";
+    
         if (sortBy === "id") {
-            return a[sortBy] - b[sortBy]; // Comparação numérica
+            return Number(valueA) - Number(valueB);
         } else {
-            return a[sortBy].localeCompare(b[sortBy]); // Comparação alfabética
+            return String(valueA).localeCompare(String(valueB));
         }
     });
+    
     renderProducts();
-});
+}
 
 document.getElementById("searchInput").addEventListener("input", (event) => {
     const query = event.target.value.toLowerCase();
-    products = JSON.parse(localStorage.getItem("products")).filter(product => {
+    const filteredProducts = JSON.parse(localStorage.getItem("products")).filter(product => {
         return (
             product.name.toLowerCase().includes(query) ||
             product.brand.toLowerCase().includes(query) ||
@@ -98,8 +173,9 @@ document.getElementById("searchInput").addEventListener("input", (event) => {
         );
     });
     currentPage = 1;
-    renderProducts();
+    renderProducts(filteredProducts); // Passe a lista filtrada para renderizar
 });
+
 
 function viewProduct(id) {
     alert(`Viewing details for product ID: ${id}`);
@@ -109,24 +185,27 @@ function editProduct(id) {
     alert(`Editing product ID: ${id}`);
 }
 
-function deleteProduct(id) {
+function deleteProduct(id) { 
     if (confirm("Are you sure you want to delete this product?")) {
-        products = products.filter(product => product.id !== id);
-        localStorage.setItem("products", JSON.stringify(products));
+        products = products.filter(product => product.id !== id); // Atualiza localmente
+        localStorage.setItem("products", JSON.stringify(products)); // Atualiza no localStorage
         renderProducts();
     }
 }
 
 document.getElementById("resetProducts").addEventListener("click", () => {
     if (confirm("Reset products to initial state?")) {
-        localStorage.setItem("products", JSON.stringify(initialProducts));
+        localStorage.setItem('products', JSON.stringify(initialProducts));
         products = [...initialProducts];
+        currentPage = 1; // Reinicia para a primeira página
         renderProducts();
     }
 });
 
 document.getElementById("logoutButton").addEventListener("click", () => {
-    localStorage.removeItem("currentUser");
+    localStorage.removeItem("users");
     alert("Logged out successfully!");
     window.location.href = "index.html";
 });
+
+

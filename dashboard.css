@@ -9,12 +9,14 @@ body {
     background-color: #f5f5f5;
     color: #333;
     line-height: 1.6;
+    margin: 0;
+    padding: 20px;
 }
 
 .container {
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
+    margin: 0 auto;
+    padding: 20px; 
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -71,12 +73,21 @@ h1, h2 {
     background-color: #0056b3;
 }
 
-.controls input, .controls select {
+.controls input {
     padding: 8px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 200px;
+}
+.controls select{
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    position: relative;
+    z-index: 10;
 }
 
 table {
@@ -125,13 +136,58 @@ table button:hover {
     background-color: #555;
 }
 
-/* Paginação */
+table tr:hover {
+    background-color: #a0a0a0;
+    color: #007BFF;
+}
+
+
 .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 10px; 
     margin-top: 20px;
+}
+
+.pagination .page-number {
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    padding: 2px 5px;
+    text-decoration: none;
+}
+
+.pagination .page-number.active {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.pagination .nav-button {
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pagination .nav-button:hover {
+    background-color: #0056b3;
+}
+
+.pagination .nav-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination .dots {
+    font-size: 16px;
+    color: #777;
+    margin: 0 5px;
 }
 
 .pagination button {
@@ -140,7 +196,7 @@ table button:hover {
     background-color: #007BFF;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
 }
 
@@ -154,17 +210,33 @@ table button:hover {
     font-weight: bold;
 }
 
+.pagination-button.active {
+    color: blue; /* Destaque para o botão ativo */
+}
+.pagination-button:disabled {
+    color: #ccc; /* Cor desabilitada */
+    cursor: not-allowed;
+}
+.pagination button {
+    padding: 5px 10px; /* Reduza o preenchimento interno */
+    font-size: 12px; /* Diminua o tamanho da fonte */
+    border-radius: 5px; /* Ajuste o arredondamento dos cantos */
+}
+
+
 /* Responsividade */
 @media (max-width: 768px) {
     .controls {
         flex-direction: column;
         align-items: flex-start;
+        flex-wrap: wrap;
     }
 
     .controls input, .controls select, .controls button {
         width: 100%;
         margin-bottom: 10px;
     }
+    
 
     table th, table td {
         font-size: 12px;

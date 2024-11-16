@@ -1,19 +1,5 @@
-// Verifica se o banco de dados já foi inicializado
-if (!localStorage.getItem('users')) {
-    // Inicializa dados simulados no LocalStorage
-    const simulatedUsers = [
-        { name: "Admin", email: "admin@bluevelvet.com", password: "admin123", role: "Administrador" },
-        { name: "John Doe", email: "john@bluevelvet.com", password: "john1234", role: "Diretor de vendas" },
-        { name: "Jane Smith", email: "jane@bluevelvet.com", password: "jane1234", role: "Editor" }
-    ];
-
-    // Salva os usuários no LocalStorage
-    localStorage.setItem('users', JSON.stringify(simulatedUsers));
-    console.log("Banco de dados inicializado com sucesso!");
-} else {
-    console.log("Banco de dados já inicializado.");
-}
-
+// Obtém os dados do banco de dados (usuários)
+const users = JSON.parse(localStorage.getItem('users'));
 
 // Lida com o login do formulário
 document.getElementById('loginForm').addEventListener('submit', function (event) {

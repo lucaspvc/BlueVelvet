@@ -1,9 +1,6 @@
 // Obtém os dados do banco de dados (usuários)
 const users = JSON.parse(localStorage.getItem('users'));
 
-// Exibe os usuários para depuração
-console.log(users);
-
 // Função para verificar se o usuário atual é administrador
 function isAdmin() {
     const currentUserEmail = localStorage.getItem('currentUserEmail');
