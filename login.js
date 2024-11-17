@@ -20,9 +20,16 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             // Armazena credenciais no LocalStorage caso "Lembrar-me" esteja ativado
             localStorage.setItem('rememberedEmail', email);
             localStorage.setItem('rememberedPassword', password);
+        } else {
+            // Remove credenciais armazenadas caso "Lembrar-me" não esteja ativado
+            localStorage.removeItem('rememberedEmail');
+            localStorage.removeItem('rememberedPassword');
         }
-        
-        // Verifica se o usuário tem permissão para acessar o painel de gestão
+
+        // Salva o usuário logado no LocalStorage
+        localStorage.setItem('currentUser', JSON.stringify(user));
+
+        // Redireciona para a página apropriada com base no papel do usuário
         if (["Administrador", "Diretor de vendas", "Gestor de expedição"].includes(user.role)) {
             alert(`Login successful! Welcome, ${user.name} (${user.role}).`);
             window.location.href = "product-management.html"; // Painel de gestão de produtos
@@ -35,6 +42,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         document.getElementById('errorMessage').textContent = "E-mail ou palavra-passe incorrectos. Por favor, tente novamente.";
     }
 });
+
 
 // Redireciona para a página de login do administrador
 document.getElementById('registerLink').addEventListener('click', function () {

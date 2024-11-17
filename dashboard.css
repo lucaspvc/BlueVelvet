@@ -23,34 +23,42 @@ body {
 }
 
 h1, h2 {
-    text-align: center;
+    text-align: left;
     color: #444;
 }
 
-#logoutButton {
-    display: block;
-    margin: 10px auto;
-    padding: 10px 20px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-#logoutButton:hover {
-    background-color: #555;
+#header {
+    display: flex;
+    justify-content:right; /* Alinha os itens nas extremidades */
+    align-items: first baseline; /* Centraliza os itens verticalmente */
+    padding: 10px 10px; /* Adiciona espaçamento */
+    margin-bottom: 0px;
 }
 
 #welcomeMessage {
-    text-align: center;
+    text-align: right;
     margin-bottom: 20px;
     font-size: 18px;
     font-weight: bold;
     color: #555;
 }
 
+#logoutButton {
+    padding: 5px 10px; /* Reduz o tamanho interno do botão */
+    font-size: 12px; /* Diminui o tamanho da fonte */
+    border-radius: 3px; /* Reduz o arredondamento */
+    width: auto; /* Garante que o tamanho do botão seja proporcional ao texto */
+ 
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#logoutButton:hover {
+    background-color: #555;
+}
 .controls {
     display: flex;
     justify-content: space-between;
@@ -94,6 +102,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    table-layout: fixed; /* Define um layout fixo para a tabela */
 }
 
 table thead {
@@ -105,6 +114,9 @@ table th, table td {
     text-align: left;
     padding: 10px;
     border: 1px solid #ddd;
+    overflow: hidden; /* Garante que conteúdo extra não transborde */
+    text-overflow: ellipsis; /* Aplica reticências ao conteúdo longo */
+    white-space: nowrap; /* Impede quebra de linha */
 }
 
 table th {
@@ -139,6 +151,62 @@ table button:hover {
 table tr:hover {
     background-color: #a0a0a0;
     color: #007BFF;
+}
+
+/* Define tamanhos padrão para colunas específicas */
+table th.id-col, table td.id-col {
+    width: 50px; /* Tamanho fixo para ID */
+}
+
+table th.image-col, table td.image-col {
+    width: 70px; /* Tamanho fixo para Imagem */
+}
+
+table th.category-col, table td.category-col {
+    width: 120px; /* Tamanho fixo para Categoria */
+}
+
+table th.actions-col {
+    width: 150px; /* Tamanho fixo para Ações */
+    height: auto;
+}
+
+/* Permite quebra de linha nas colunas Name e Brand */
+table th.name-col, table td.name-col,
+table th.brand-col, table td.brand-col {
+    white-space: normal; /* Permite quebra de linha */
+    word-wrap: break-word; /* Quebra palavras longas */
+}
+
+/* Estilo da coluna de ações */
+table td.actions-col {
+    width: 150px; /* Ajuste conforme necessário */
+    text-align: center;
+    white-space: nowrap; /* Impede quebra de linha */
+    vertical-align: top; /* Garante que o conteúdo esteja no topo da célula */
+}
+
+/* Estilo dos botões dentro da coluna de ações */
+table td.actions-col button {
+    display: block; /* Faz com que os botões fiquem em blocos e empilhados um abaixo do outro */
+    width: 100%; /* Faz com que os botões ocupem toda a largura da célula */
+    margin: 2px 0; /* Adiciona um espaçamento entre os botões */
+}
+
+table .btn-action {
+    display: inline-block; /* Exibe os botões lado a lado */
+    margin: 2px; /* Espaçamento entre os botões */
+    padding: 5px 8px;
+    font-size: 12px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+table .btn-action:hover {
+    background-color: #0056b3;
 }
 
 
@@ -222,7 +290,6 @@ table tr:hover {
     font-size: 12px; /* Diminua o tamanho da fonte */
     border-radius: 5px; /* Ajuste o arredondamento dos cantos */
 }
-
 
 /* Responsividade */
 @media (max-width: 768px) {

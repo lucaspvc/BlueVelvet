@@ -12,7 +12,7 @@ function isAdmin() {
 window.onload = function () {
     if (!isAdmin()) {
         alert("Apenas administradores podem registrar novos usuários.");
-        //window.location.href = "index.html"; // Redireciona para a página de login
+        window.location.href = "index.html"; // Redireciona para a página de login
     }
 };
 

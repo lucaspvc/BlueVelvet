@@ -11,7 +11,7 @@ if (!localStorage.getItem("products")) {
 }
 
 // Verifica autenticação
-const currentUser = JSON.parse(localStorage.getItem("users"));
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
 // Atualiza mensagem de boas-vindas
 document.getElementById("welcomeMessage").textContent = `Welcome, ${currentUser.name} (${currentUser.role})`;
@@ -105,11 +105,11 @@ function renderProducts(filteredProducts = products) {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${product.id}</td>
-            <td><img src="${product.image}" alt="${product.name}" width="50"></td>
+            <td><img src="${product.mainImage}" alt="${product.name}" width="50"></td>
             <td>${product.name}</td>
             <td>${product.brand}</td>
             <td>${product.category}</td>
-            <td>
+            <td class="actions-col">
                 <button onclick="viewProduct(${product.id})">View</button>
                 <button onclick="editProduct(${product.id})">Edit</button>
                 <button onclick="deleteProduct(${product.id})">Delete</button>
@@ -193,19 +193,21 @@ function deleteProduct(id) {
     }
 }
 
-document.getElementById("resetProducts").addEventListener("click", () => {
-    if (confirm("Reset products to initial state?")) {
-        localStorage.setItem('products', JSON.stringify(initialProducts));
-        products = [...initialProducts];
-        currentPage = 1; // Reinicia para a primeira página
-        renderProducts();
+document.getElementById("addProduct").addEventListener("click", () => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser")); // Certifique-se de obter os dados atualizados do usuário
+    console.log(currentUser);
+    console.log(currentUser.role);
+
+    if (currentUser.role === "Administrador" || currentUser.role === "Editor") {
+        window.location.href = "add.html";
+    } else {
+        alert("Apenas usuários com o papel de Administrador ou Editor podem acessar esta página.");
     }
 });
+
 
 document.getElementById("logoutButton").addEventListener("click", () => {
     localStorage.removeItem("users");
     alert("Logged out successfully!");
     window.location.href = "index.html";
 });
-
-

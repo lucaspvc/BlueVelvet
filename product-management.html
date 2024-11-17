@@ -11,8 +11,10 @@
     <div class="container">
         <h1>BlueVelvet Music Store</h1>
         <h2>Product Management</h2>
-        <p id="welcomeMessage"></p>
-        <button id="logoutButton">Logout</button>
+        <div id="header">
+            <p id="welcomeMessage"></p>
+            <button id="logoutButton">Logout</button>
+        </div>
         <div class="controls">
             <button id="resetProducts">Reset Products to Initial State</button>
             <button id="addProduct">Add Product</button>
@@ -27,16 +29,16 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Brand</th>
-                    <th>Category</th>
-                    <th>Actions</th>
+                    <th class="id-col">ID</th>
+                    <th class="image-col">Image</th>
+                    <th class="name-col">Name</th>
+                    <th class="brand-col">Brand</th>
+                    <th class="category-col">Category</th>
+                    <th class="actions-col">Actions</th>
                 </tr>
             </thead>
             <tbody id="productTableBody"></tbody>
-        </table>
+        </table>        
         <div class="pagination">
             <button id="prevPage" class="pagination-button"  aria-label="Anterior">&lt;</button>
             <span class="pagination-number">1</span>
