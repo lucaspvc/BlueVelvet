@@ -102,11 +102,13 @@ button:hover {
     background-color: #555; /* Cor de fundo ao passar o mouse */
   }
 
-  .error-message {
-    color: red;
-    font-size: 0.875em;
-    display: none; /* Initially hidden */
-  }
+/* Estilo para a mensagem de erro */
+.error-message {
+  color: red;
+  font-size: 12px;
+  display: none; /* Por padrão, a mensagem de erro estará oculta */
+  margin-top: 5px;
+}
   
   input.error, textarea.error, select.error {
     border: 2px solid red;
@@ -115,5 +117,10 @@ button:hover {
   input.error:focus, textarea.error:focus, select.error:focus {
     border-color: darkred;
   }
-  
+
+    /* Exibir a mensagem de erro */
+  .error-message.show {
+    display: block;
+  }
+    
   

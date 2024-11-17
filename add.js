@@ -57,11 +57,17 @@ function addProduct() {
   }
 
   // Verificar unicidade do nome
-  const isNameUnique = !existingProducts.some(product => product.name && newProduct.name && product.name.toLowerCase() === newProduct.name.toLowerCase());
+  const isNameUnique = !existingProducts.some(product => {
+    return product.name && newProduct.name &&
+          product.name.trim().toLowerCase() === newProduct.name.trim().toLowerCase();
+  });
+
   if (!isNameUnique) {
+    alert('Já existe um produto com esse nome.');
     showError('name', 'O nome do produto já existe. Por favor, escolha outro nome.');
     return;
   }
+
 
   // Adicionar o novo produto
   existingProducts.push(newProduct);
@@ -85,20 +91,9 @@ function showError(fieldId, message) {
   const errorElement = document.getElementById(`${fieldId}-error`);
 
   if (field && errorElement) {
-    // Verifica se o campo é do tipo 'file'
-    if (field.type === 'file') {
-      if (!field.files.length) { // Se não houver arquivo selecionado
-        field.classList.add('error');
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-      } else {
-        field.classList.remove('error');
-        errorElement.textContent = '';
-        errorElement.style.display = 'none';
-      }
-    } else {
-      // Para campos de texto (input, textarea)
+    // Para campos de texto (input, textarea)
       if (!field.value.trim()) {
+        alert('showerroe');
         field.classList.add('error');
         errorElement.textContent = message;
         errorElement.style.display = 'block';
@@ -108,7 +103,6 @@ function showError(fieldId, message) {
         errorElement.style.display = 'none';
       }
     }
-  }
 }
 
 
