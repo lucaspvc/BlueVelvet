@@ -30,7 +30,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         localStorage.setItem('currentUser', JSON.stringify(user));
 
         // Redireciona para a página apropriada com base no papel do usuário
-        if (["Administrador", "Diretor de vendas", "Gestor de expedição"].includes(user.role)) {
+        if (["admin", "Diretor de vendas", "Gestor de expedição"].includes(user.role)) {
             alert(`Login successful! Welcome, ${user.name} (${user.role}).`);
             window.location.href = "product-management.html"; // Painel de gestão de produtos
         } else {

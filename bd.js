@@ -1,6 +1,6 @@
 
 const simulatedUsers = [
-        { name: "Admin", email: "admin@bluevelvet.com", password: "admin123", role: "Administrador" },
+        { name: "Admin", email: "admin@bluevelvet.com", password: "admin123", role: "admin" },
         { name: "John Doe", email: "john@bluevelvet.com", password: "john1234", role: "Diretor de vendas" },
         { name: "Jane Smith", email: "jane@bluevelvet.com", password: "jane1234", role: "Editor" },
 ];
@@ -244,5 +244,12 @@ const initialProducts = [
   ];
   
 
-localStorage.setItem('products', JSON.stringify(initialProducts));
-console.log("bd iniciado-produtos!");
+// Salva o estado inicial em uma chave separada no localStorage
+if (!localStorage.getItem('resetProducts')) {
+  localStorage.setItem('resetProducts', JSON.stringify(initialProducts));
+}
+
+// Inicializa os produtos com base no estado atual ou no inicial
+if (!localStorage.getItem('products')) {
+  localStorage.setItem('products', JSON.stringify(initialProducts));
+}
