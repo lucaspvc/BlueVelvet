@@ -212,7 +212,7 @@ document.getElementById("addProduct").addEventListener("click", () => {
     console.log(currentUser);
     console.log(currentUser.role);
 
-    if (currentUser.role === "admin" || currentUser.role === "Editor") {
+    if (currentUser.role === "admin" || currentUser.role === "editor") {
         window.location.href = "add.html";
     } else {
         alert("Apenas usuários com o papel de Administrador ou Editor podem acessar esta página.");
