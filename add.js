@@ -82,7 +82,7 @@ function addProduct() {
   detailsContainer.innerHTML = ''; 
   addInitialDetailRow(); 
 
-  window.location.href = "product-management.html";
+  returnDashboard()
 }
 
 
@@ -152,4 +152,8 @@ function createDetailRow() {
   newRow.appendChild(deleteButton);
 
   return newRow;
+}
+
+function returnDashboard(){
+  window.location.href = "product-management.html";
 }

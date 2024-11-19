@@ -33,28 +33,64 @@
     <label for="extra-images">Extra Image</label>
     <input type="file" id="extra-images" name="extraImages" accept="image/png" multiple>
   
-    <input type="number" id="price" name="price" step="0.01" placeholder="Price" required>
-    <span class="error-message" id="price-error"></span>
+    <div class="side-container">
+      <input type="number" id="price" name="price" step="0.01" placeholder="Price" required>
+      <span class="error-message" id="price-error"></span>
+
+      <input type="number" id="cost" name="cost" step="0.01" placeholder="Cost">
+      <span class="error-message" id="cost-error"></span>
+    </div>
   
     <input type="number" id="discount" name="discount" step="0.01" placeholder="Discount">
-  
-    <label for="activated">Activated</label>
-    <select id="activated" name="activated">
-      <option value="true">Yes</option>
-      <option value="false">No</option>
-    </select>
-  
-    <label for="in-stock">In Stock</label>
-    <select id="in-stock" name="inStock">
-      <option value="true">Yes</option>
-      <option value="false">No</option>
-    </select>
+    <!--
+    <div class="side-container">
+      <label for="activated">Activated</label>
+      <select id="activated" name="activated">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    
+      <label for="in-stock">Stock</label>
+      <select id="in-stock" name="inStock">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </div>
+  -->
+    <div class="side-container">
+    <div class="input-group" for="activated">
+      <label class="group-label">Activated</label>
+      <div class="radio-input">
+        <label>
+          <input value="true" name="activated" id="activated" type="radio" />
+          <span>Yes</span>
+        </label>
+        <label>
+          <input value="false" name="activated" id="activated" type="radio" />
+          <span>No</span>
+        </label>
+        <span class="selection"></span>
+      </div>
+    </div>
+    <div class="input-group" for="inStock">
+      <label class="group-label">Stock</label>
+      <div class="radio-input">
+        <label>
+          <input value="true" name="inStock" id="inStock" type="radio" />
+          <span>Yes</span>
+        </label>
+        <label>
+          <input value="false" name="inStock" id="inStock" type="radio" />
+          <span>No</span>
+        </label>
+        <span class="selection"></span>
+      </div>
+    </div>
+  </div>
   
     <input type="text" id="dimensions" name="dimensions" placeholder="Dimensions Length x Width x Height (inch)">
   
     <input type="number" id="weight" name="weight" step="0.01" placeholder="Weight (pounds)">
-  
-    <input type="number" id="cost" name="cost" step="0.01" placeholder="Cost">
   
     <div id="details-container">
       <div class="detail-row">
@@ -64,7 +100,11 @@
       </div>
     </div>      
   
-    <button type="button" onclick="addProduct()">Add Product</button>
+    <div class="side-container">
+      <button type="button" id="return-btn" onclick="returnDashboard()">Return to Dashboard</button>
+      <button type="button" id="add-btn" onclick="addProduct()">Add Product</button>
+    </div>
+  
   </form>
   
 

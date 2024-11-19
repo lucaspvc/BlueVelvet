@@ -1,126 +1,251 @@
 body {
-    background-color: #f5f5f5;
-    color: #333;
-    line-height: 1.6;
-    margin: 0;
-    padding: 20px;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
 }
-  
-  form {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  label {
-    font-weight: bold;
-    margin-top: 10px;
-    display: block;
-  }
-  
-  input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    max-width: 100%; 
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box; /* Inclui padding e borda no cálculo do tamanho total */
-  }
 
-  h1 {
-    text-align: center;
-    font-size: 24px;
-    color: #333;
+form {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+label {
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  max-width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  /* Inclui padding e borda no cálculo do tamanho total */
+}
+
+h1 {
+  text-align: center;
+  font-size: 24px;
+  color: #333;
 }
 
 h2 {
-    font-size: 18px;
-    text-align: center;
-    color: #666;
+  font-size: 18px;
+  text-align: center;
+  color: #666;
 }
- 
+
 button {
-    width: 100%;
-    padding: 0.5em;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
+  width: 50%;
+  padding: 0.5em;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 button:hover {
-    background-color: #555;
+  background-color: #555;
 }
 
-  textarea {
-    resize: vertical; /* Permite redimensionar apenas horizontalmente */
-    width: 100%; /* Garante que o tamanho inicial seja ajustado ao container */
-    max-width: 100%; /* Impede que a caixa ultrapasse a largura do container */
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box; /* Inclui padding e borda no cálculo do tamanho total */
-  }
+.side-container {
+  display: flex;
+  align-items: center; /* Alinha verticalmente ao centro */
+  justify-content: center; /* Centraliza horizontalmente */
+  gap: 2em; /* Espaço entre os campos */
+}
 
-  .detail-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .detail-row textarea {
-    resize: none; /* Evita redimensionamento desnecessário */
-    height: 40px; /* Define uma altura fixa para alinhamento */
-    font-size: 14px; /* Ajusta o tamanho da fonte */
-  }
-    
-  .add-detail-button {
-    width: auto; /* Tamanho ajustado ao conteúdo */
-    padding: 5px 10px; /* Reduz o espaçamento interno */
-    font-size: 14px; /* Ajusta o tamanho da fonte */
-    background-color: #333; /* Cor do fundo */
-    color: #fff; /* Cor do texto */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .add-detail-button:hover {
-    background-color: #555; /* Cor de fundo ao passar o mouse */
-  }
+
+#add-btn {
+  background-color: rgb(6, 189, 6);
+
+}
+
+#add-btn:hover {
+  background-color: rgb(36, 197, 36);
+}
+
+#return-btn {
+  background-color: rgb(236, 61, 61);
+}
+
+#return-btn:hover {
+  background-color: rgb(196, 29, 29);
+}
+
+textarea {
+  resize: vertical;
+  /* Permite redimensionar apenas horizontalmente */
+  width: 100%;
+  /* Garante que o tamanho inicial seja ajustado ao container */
+  max-width: 100%;
+  /* Impede que a caixa ultrapasse a largura do container */
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  /* Inclui padding e borda no cálculo do tamanho total */
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.detail-row textarea {
+  resize: none;
+  /* Evita redimensionamento desnecessário */
+  height: 40px;
+  /* Define uma altura fixa para alinhamento */
+  font-size: 14px;
+  /* Ajusta o tamanho da fonte */
+}
+
+.add-detail-button {
+  width: auto;
+  /* Tamanho ajustado ao conteúdo */
+  padding: 5px 10px;
+  /* Reduz o espaçamento interno */
+  font-size: 14px;
+  /* Ajusta o tamanho da fonte */
+  background-color: #333;
+  /* Cor do fundo */
+  color: #fff;
+  /* Cor do texto */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-detail-button:hover {
+  background-color: #555;
+  /* Cor de fundo ao passar o mouse */
+}
 
 /* Estilo para a mensagem de erro */
 .error-message {
   color: red;
   font-size: 12px;
-  display: none; /* Por padrão, a mensagem de erro estará oculta */
+  display: none;
+  /* Por padrão, a mensagem de erro estará oculta */
   margin-top: 5px;
 }
-  
-  input.error, textarea.error, select.error {
-    border: 2px solid red;
-  }
-  
-  input.error:focus, textarea.error:focus, select.error:focus {
-    border-color: darkred;
-  }
 
-    /* Exibir a mensagem de erro */
-  .error-message.show {
-    display: block;
-  }
-    
+input.error,
+textarea.error,
+select.error {
+  border: 2px solid red;
+}
+
+input.error:focus,
+textarea.error:focus,
+select.error:focus {
+  border-color: darkred;
+}
+
+/* Exibir a mensagem de erro */
+.error-message.show {
+  display: block;
+}
+
+.radio-input input {
+  display: none;
+}
+
+.radio-input {
+  --container_width: 200px;
+  --container_heigt:30px ;
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #000000;
+  width: var(--container_width);
+  height: var(--container_height);
+  overflow: hidden;
+  border: 1px solid rgba(53, 52, 52, 0.226);
+  box-sizing: border-box; /* Inclui border/padding dentro da largura */
+}
+
+.radio-input label {
+  width: 100%;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  font-weight: 600;
+  letter-spacing: -1px;
+  font-size: 12px;
+  box-sizing: border-box; /* Inclui border/padding dentro da largura */
+}
+
+.selection {
+  display: none;
+  position: absolute;
+  height: 100%;
+  width: calc(var(--container_width) / 2);
+  z-index: 0;
+  left: 0;
+  top: 0;
+  transition: 0.15s ease;
+}
+
+.radio-input label:has(input:checked) {
+  color: #fff;
+}
+
+.radio-input label:has(input:checked) ~ .selection {
+  background-color: rgb(11 117 223);
+  display: inline-block;
+}
+
+.radio-input label:nth-child(1):has(input:checked) ~ .selection {
+  transform: translateX(calc(var(--container_width) * 0 / 2));
+}
+
+.radio-input label:nth-child(2):has(input:checked) ~ .selection {
+  transform: translateX(calc(var(--container_width) * 1 / 2));
+}
+
+.input-group {
+  display: flex;
+  align-items:center;
+  justify-items: cente;
+  gap: 1em; /* Espaço entre o texto e os botões */
+  margin-bottom: 1em; /* Espaço inferior opcional */
+  max-width: 100%; /* Limita o grupo à largura do container pai */
+  flex-wrap: wrap; /* Faz os itens quebrarem para a próxima linha se necessário */
+}
+
+/* Estilo do rótulo à esquerda */
+.group-label {
+  font-weight: bold;
+  font-size: 16px;
+  min-width: 100px; /* Define uma largura mínima para alinhamento */
+  text-align: center; /* Alinha o texto à direita */
   
+  flex-shrink: 0; /* Impede que o rótulo diminua demais */
+}
