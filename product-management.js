@@ -195,8 +195,9 @@ function viewProduct(id) {
 }
 
 function editProduct(id) {
-    alert(`Editing product ID: ${id}`);
+    window.location.href = `edit-product.html?id=${id}`;
 }
+
 
 function deleteProduct(id) { 
     if (confirm("Are you sure you want to delete this product?")) {
@@ -246,7 +247,8 @@ document.getElementById("resetProducts").addEventListener("click", () => {
         
         // Reinicia para a primeira página (se necessário)
         currentPage = 1;
-        
+        products.sort((a, b) => a.name.localeCompare(b.name));
+                
         // Atualiza a exibição dos produtos
         renderProducts();
     }
