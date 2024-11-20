@@ -1,126 +1,270 @@
 body {
-    background-color: #f5f5f5;
-    color: #333;
-    line-height: 1.6;
-    margin: 0;
-    padding: 20px;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
 }
-  
-  form {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  label {
-    font-weight: bold;
-    margin-top: 10px;
-    display: block;
-  }
-  
-  input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    max-width: 100%; 
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box; /* Inclui padding e borda no cálculo do tamanho total */
-  }
 
-  h1 {
-    text-align: center;
-    font-size: 24px;
-    color: #333;
+form {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+label {
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  max-width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  /* Inclui padding e borda no cálculo do tamanho total */
+}
+
+h1 {
+  text-align: center;
+  font-size: 24px;
+  color: #333;
 }
 
 h2 {
-    font-size: 18px;
-    text-align: center;
-    color: #666;
+  font-size: 18px;
+  text-align: center;
+  color: #666;
 }
- 
+
 button {
-    width: 100%;
-    padding: 0.5em;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
+  width: 50%;
+  padding: 0.5em;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 button:hover {
-    background-color: #555;
+  background-color: #555;
 }
 
-  textarea {
-    resize: vertical; /* Permite redimensionar apenas horizontalmente */
-    width: 100%; /* Garante que o tamanho inicial seja ajustado ao container */
-    max-width: 100%; /* Impede que a caixa ultrapasse a largura do container */
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box; /* Inclui padding e borda no cálculo do tamanho total */
-  }
+.side-container {
+  display: flex;
+  align-items: center;
+  /* Alinha verticalmente ao centro */
+  justify-content: center;
+  /* Centraliza horizontalmente */
+  gap: 2em;
+  /* Espaço entre os campos */
+  box-sizing: border-box;
+}
 
-  .detail-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .detail-row textarea {
-    resize: none; /* Evita redimensionamento desnecessário */
-    height: 40px; /* Define uma altura fixa para alinhamento */
-    font-size: 14px; /* Ajusta o tamanho da fonte */
-  }
-    
-  .add-detail-button {
-    width: auto; /* Tamanho ajustado ao conteúdo */
-    padding: 5px 10px; /* Reduz o espaçamento interno */
-    font-size: 14px; /* Ajusta o tamanho da fonte */
-    background-color: #333; /* Cor do fundo */
-    color: #fff; /* Cor do texto */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .add-detail-button:hover {
-    background-color: #555; /* Cor de fundo ao passar o mouse */
-  }
+
+#add-btn {
+  background-color: rgb(6, 189, 6);
+
+}
+
+#add-btn:hover {
+  background-color: rgb(36, 197, 36);
+}
+
+#save-btn {
+  background-color: rgb(6, 107, 189);
+
+}
+
+#save-btn:hover {
+  background-color: rgb(36, 47, 197);
+}
+
+#return-btn {
+  background-color: rgb(236, 61, 61);
+}
+
+#return-btn:hover {
+  background-color: rgb(196, 29, 29);
+}
+
+textarea {
+  resize: vertical;
+  /* Permite redimensionar apenas horizontalmente */
+  width: 100%;
+  /* Garante que o tamanho inicial seja ajustado ao container */
+  max-width: 100%;
+  /* Impede que a caixa ultrapasse a largura do container */
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  /* Inclui padding e borda no cálculo do tamanho total */
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.detail-row textarea {
+  resize: none;
+  /* Evita redimensionamento desnecessário */
+  height: 40px;
+  /* Define uma altura fixa para alinhamento */
+  font-size: 14px;
+  /* Ajusta o tamanho da fonte */
+}
+
+.add-detail-button {
+  width: auto;
+  /* Tamanho ajustado ao conteúdo */
+  padding: 5px 10px;
+  /* Reduz o espaçamento interno */
+  font-size: 14px;
+  /* Ajusta o tamanho da fonte */
+  background-color: #333;
+  /* Cor do fundo */
+  color: #fff;
+  /* Cor do texto */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-detail-button:hover {
+  background-color: #555;
+  /* Cor de fundo ao passar o mouse */
+}
 
 /* Estilo para a mensagem de erro */
 .error-message {
   color: red;
   font-size: 12px;
-  display: none; /* Por padrão, a mensagem de erro estará oculta */
+  display: none;
+  /* Por padrão, a mensagem de erro estará oculta */
   margin-top: 5px;
 }
-  
-  input.error, textarea.error, select.error {
-    border: 2px solid red;
-  }
-  
-  input.error:focus, textarea.error:focus, select.error:focus {
-    border-color: darkred;
-  }
 
-    /* Exibir a mensagem de erro */
-  .error-message.show {
-    display: block;
-  }
-    
-  
+input.error,
+textarea.error,
+select.error {
+  border: 2px solid red;
+}
+
+input.error:focus,
+textarea.error:focus,
+select.error:focus {
+  border-color: darkred;
+}
+
+/* Exibir a mensagem de erro */
+.error-message.show {
+  display: block;
+}
+
+.radio-input input {
+  display: none;
+}
+
+.radio-input {
+  --container-width: 200px;
+  --container-height: 40px;
+  position: relative;
+  display: flex;
+  align-items: right;
+  justify-content: center;
+  width: var(--container-width);
+  height: var(--container-height);
+  border: 1px solid rgba(53, 52, 52, 0.226);
+  color: rgb(178, 178, 178);
+  border-radius: 10px;
+  background-color: #fff;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.radio-input label {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 2;
+  height: 100%;
+  text-align: center;
+  background-color: transparent;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.selection {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: rgb(0, 0, 0);
+  border-radius: 10px;
+  transition: transform 0.25s ease;
+  z-index: 1;
+}
+
+.radio-input label:has(input:checked) {
+  color: rgb(178, 178, 178);
+  text-align: center;
+}
+
+.radio-input label:has(input:checked)~.selection {
+  background-color: rgb(0, 0, 0);
+  display: inline-block;
+}
+
+.radio-input label:nth-child(1):has(input:checked)~.selection {
+  transform: translateX(0);
+}
+
+.radio-input label:nth-child(2):has(input:checked)~.selection {
+  transform: translateX(100%);
+}
+
+.input-group {
+  display: flex;
+  gap: 1em;
+  margin-bottom: 1em;
+}
+
+.group-label {
+  font-weight: bold;
+  font-size: 16px;
+  min-width: 150px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.right-container {
+  display: flex;
+  justify-content: right;
+  gap: 0em;
+  box-sizing: border-box;
+}
