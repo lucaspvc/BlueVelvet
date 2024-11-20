@@ -191,8 +191,39 @@ document.getElementById("searchInput").addEventListener("input", (event) => {
 
 
 function viewProduct(id) {
-    alert(`Viewing details for product ID: ${id}`);
+    const product = products.find(product => product.id === id);
+    if (product) {
+        const productDetails = `
+            <strong>ID:</strong> ${product.id}<br>
+            <strong>Name:</strong> ${product.name}<br>
+            <strong>Brand:</strong> ${product.brand}<br>
+            <strong>Category:</strong> ${product.category}<br>
+            <strong>Description:</strong> ${product.description || "No description available."}<br>
+            <img src="${product.mainImage}" alt="${product.name}" style="width:200px;">
+        `;
+
+        document.getElementById('productDetails').innerHTML = productDetails;
+
+        const modal = document.getElementById('productModal');
+        modal.style.display = "block";
+
+        // Fechar o modal
+        const closeBtn = document.querySelector('.close');
+        closeBtn.onclick = () => {
+            modal.style.display = "none";
+        };
+
+        // Fechar ao clicar fora do modal
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+    } else {
+        alert("Product not found!");
+    }
 }
+
 
 function editProduct(id) {
     window.location.href = `edit-product.html?id=${id}`;

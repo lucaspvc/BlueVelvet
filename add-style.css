@@ -67,9 +67,13 @@ button:hover {
 
 .side-container {
   display: flex;
-  align-items: center; /* Alinha verticalmente ao centro */
-  justify-content: center; /* Centraliza horizontalmente */
-  gap: 2em; /* Espaço entre os campos */
+  align-items: center;
+  /* Alinha verticalmente ao centro */
+  justify-content: center;
+  /* Centraliza horizontalmente */
+  gap: 2em;
+  /* Espaço entre os campos */
+  box-sizing: border-box;
 }
 
 
@@ -80,6 +84,15 @@ button:hover {
 
 #add-btn:hover {
   background-color: rgb(36, 197, 36);
+}
+
+#save-btn {
+  background-color: rgb(6, 107, 189);
+
+}
+
+#save-btn:hover {
+  background-color: rgb(36, 47, 197);
 }
 
 #return-btn {
@@ -173,79 +186,85 @@ select.error:focus {
 }
 
 .radio-input {
-  --container_width: 200px;
-  --container_heigt:30px ;
+  --container-width: 200px;
+  --container-height: 40px;
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: right;
+  justify-content: center;
+  width: var(--container-width);
+  height: var(--container-height);
+  border: 1px solid rgba(53, 52, 52, 0.226);
+  color: rgb(178, 178, 178);
   border-radius: 10px;
   background-color: #fff;
-  color: #000000;
-  width: var(--container_width);
-  height: var(--container_height);
   overflow: hidden;
-  border: 1px solid rgba(53, 52, 52, 0.226);
-  box-sizing: border-box; /* Inclui border/padding dentro da largura */
+  box-sizing: border-box;
 }
 
 .radio-input label {
-  width: 100%;
-  padding: 5px;
-  cursor: pointer;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: -1px;
-  font-size: 12px;
-  box-sizing: border-box; /* Inclui border/padding dentro da largura */
+  cursor: pointer;
+  z-index: 2;
+  height: 100%;
+  text-align: center;
+  background-color: transparent;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .selection {
-  display: none;
   position: absolute;
+  width: 50%;
   height: 100%;
-  width: calc(var(--container_width) / 2);
-  z-index: 0;
   left: 0;
   top: 0;
-  transition: 0.15s ease;
+  background-color: rgb(0, 0, 0);
+  border-radius: 10px;
+  transition: transform 0.25s ease;
+  z-index: 1;
 }
 
 .radio-input label:has(input:checked) {
-  color: #fff;
+  color: rgb(178, 178, 178);
+  text-align: center;
 }
 
-.radio-input label:has(input:checked) ~ .selection {
-  background-color: rgb(11 117 223);
+.radio-input label:has(input:checked)~.selection {
+  background-color: rgb(0, 0, 0);
   display: inline-block;
 }
 
-.radio-input label:nth-child(1):has(input:checked) ~ .selection {
-  transform: translateX(calc(var(--container_width) * 0 / 2));
+.radio-input label:nth-child(1):has(input:checked)~.selection {
+  transform: translateX(0);
 }
 
-.radio-input label:nth-child(2):has(input:checked) ~ .selection {
-  transform: translateX(calc(var(--container_width) * 1 / 2));
+.radio-input label:nth-child(2):has(input:checked)~.selection {
+  transform: translateX(100%);
 }
 
 .input-group {
   display: flex;
-  align-items:center;
-  justify-items: cente;
-  gap: 1em; /* Espaço entre o texto e os botões */
-  margin-bottom: 1em; /* Espaço inferior opcional */
-  max-width: 100%; /* Limita o grupo à largura do container pai */
-  flex-wrap: wrap; /* Faz os itens quebrarem para a próxima linha se necessário */
+  gap: 1em;
+  margin-bottom: 1em;
 }
 
-/* Estilo do rótulo à esquerda */
 .group-label {
   font-weight: bold;
   font-size: 16px;
-  min-width: 100px; /* Define uma largura mínima para alinhamento */
-  text-align: center; /* Alinha o texto à direita */
-  
-  flex-shrink: 0; /* Impede que o rótulo diminua demais */
+  min-width: 150px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.right-container {
+  display: flex;
+  justify-content: right;
+  gap: 0em;
+  box-sizing: border-box;
 }

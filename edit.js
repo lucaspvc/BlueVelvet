@@ -72,7 +72,7 @@ function loadProductForEdit(productId) {
     localStorage.setItem('products', JSON.stringify(products));
   
     alert('Alterações salvas com sucesso!');
-    window.location.href = "product-management.html";
+    returnDashboard();
   }
   
   // Carregar o produto automaticamente quando a página abrir
@@ -82,7 +82,12 @@ function loadProductForEdit(productId) {
       loadProductForEdit(productId);
     } else {
       alert('ID do produto não especificado!');
-      window.location.href = "product-management.html";
+      returnDashboard();
     }
   });
+  
+
+  function returnDashboard(){
+    window.location.href = "product-management.html";
+  }
   

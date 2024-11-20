@@ -1,4 +1,4 @@
-function addProduct() {
+async function addProduct() {
   const form = document.getElementById('add-product-form');
   const formData = new FormData(form);
   
@@ -21,8 +21,6 @@ function addProduct() {
     fullDescription: formData.get('fullDescription')?.trim() || null,
     brand: formData.get('brand')?.trim() || null,
     category: formData.get('category')?.trim() || null,
-    mainImage: formData.get('mainImage') instanceof File && formData.get('mainImage').name ? formData.get('mainImage').name : null,
-    extraImages: formData.get('extraImages') instanceof File && formData.get('extraImages').name ? formData.get('extraImages').name : null,
     price: parseFloat(formData.get('price')) || null,
     discount: parseFloat(formData.get('discount')) || null,
     activated: formData.get('activated') === 'true',
@@ -33,6 +31,33 @@ function addProduct() {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+  
+  const mainImageFile = formData.get('mainImage');
+  if (mainImageFile instanceof File && mainImageFile.name) {
+    try {
+      newProduct.mainImage = await convertToBase64(mainImageFile);
+    } catch (error) {
+      console.error("Erro ao converter a imagem principal para base64", error);
+    }
+  }
+  
+  const extraImagesFile = formData.get('extraImages');
+  if (extraImagesFile instanceof File && extraImagesFile.name) {
+    try {
+      newProduct.extraImages = await convertToBase64(extraImagesFile);
+    } catch (error) {
+      console.error("Erro ao converter a imagem extra para base64", error);
+    }
+  }
 
   // Validar campos obrigatórios
   if (!newProduct.name) {
@@ -157,3 +182,5 @@ function createDetailRow() {
 function returnDashboard(){
   window.location.href = "product-management.html";
 }
+
+
