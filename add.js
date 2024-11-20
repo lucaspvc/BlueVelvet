@@ -1,10 +1,10 @@
 async function addProduct() {
   const form = document.getElementById('add-product-form');
   const formData = new FormData(form);
-  
+
   // Recuperar os produtos existentes do localStorage
   const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
-  
+
   // Calcular o próximo ID
   const lastId = existingProducts.length > 0 ? Math.max(...existingProducts.map(p => p.id)) : 0;
   const newId = lastId + 1;
@@ -15,7 +15,7 @@ async function addProduct() {
   clearErrors();
 
   const newProduct = {
-    id: newId, 
+    id: newId,
     name: formData.get('name')?.trim() || null,
     shortDescription: formData.get('shortDescription')?.trim() || null,
     fullDescription: formData.get('fullDescription')?.trim() || null,
@@ -40,7 +40,7 @@ async function addProduct() {
       reader.readAsDataURL(file);
     });
   };
-  
+
   const mainImageFile = formData.get('mainImage');
   if (mainImageFile instanceof File && mainImageFile.name) {
     try {
@@ -49,15 +49,23 @@ async function addProduct() {
       console.error("Erro ao converter a imagem principal para base64", error);
     }
   }
-  
-  const extraImagesFile = formData.get('extraImages');
-  if (extraImagesFile instanceof File && extraImagesFile.name) {
+
+  const extraImagesFiles = formData.getAll('extraImages'); // Obter todos os arquivos do campo extraImages
+  newProduct.extraImages = [];
+
+  if (extraImagesFiles.length > 0) {
     try {
-      newProduct.extraImages = await convertToBase64(extraImagesFile);
+      for (const file of extraImagesFiles) {
+        if (file instanceof File && file.name) {
+          const base64Image = await convertToBase64(file);
+          newProduct.extraImages.push(base64Image);
+        }
+      }
     } catch (error) {
-      console.error("Erro ao converter a imagem extra para base64", error);
+      console.error("Erro ao converter imagens extras para base64", error);
     }
   }
+
 
   // Validar campos obrigatórios
   if (!newProduct.name) {
@@ -74,7 +82,7 @@ async function addProduct() {
   }
   if (!newProduct.mainImage) {
     // Atribui uma imagem padrão se o campo principal estiver vazio
-    newProduct.mainImage = 'images/logo.png';  
+    newProduct.mainImage = 'images/logoPreto.png';
   }
 
   if (!isValid) {
@@ -84,7 +92,7 @@ async function addProduct() {
   // Verificar unicidade do nome
   const isNameUnique = !existingProducts.some(product => {
     return product.name && newProduct.name &&
-          product.name.trim().toLowerCase() === newProduct.name.trim().toLowerCase();
+      product.name.trim().toLowerCase() === newProduct.name.trim().toLowerCase();
   });
 
   if (!isNameUnique) {
@@ -104,8 +112,8 @@ async function addProduct() {
 
   // Limpar as linhas de detalhes e adicionar a primeira linha vazia novamente
   const detailsContainer = document.getElementById('details-container');
-  detailsContainer.innerHTML = ''; 
-  addInitialDetailRow(); 
+  detailsContainer.innerHTML = '';
+  addInitialDetailRow();
 
   returnDashboard()
 }
@@ -117,17 +125,17 @@ function showError(fieldId, message) {
 
   if (field && errorElement) {
     // Para campos de texto (input, textarea)
-      if (!field.value.trim()) {
-        alert('showerroe');
-        field.classList.add('error');
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-      } else {
-        field.classList.remove('error');
-        errorElement.textContent = '';
-        errorElement.style.display = 'none';
-      }
+    if (!field.value.trim()) {
+      alert('showerroe');
+      field.classList.add('error');
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+    } else {
+      field.classList.remove('error');
+      errorElement.textContent = '';
+      errorElement.style.display = 'none';
     }
+  }
 }
 
 
@@ -179,7 +187,7 @@ function createDetailRow() {
   return newRow;
 }
 
-function returnDashboard(){
+function returnDashboard() {
   window.location.href = "product-management.html";
 }
 

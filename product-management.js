@@ -118,9 +118,9 @@ function renderProducts(filteredProducts = products) {
             <td>${product.brand}</td>
             <td>${product.category}</td>
             <td class="actions-col">
-                <button onclick="viewProduct(${product.id})">View</button>
-                <button onclick="editProduct(${product.id})">Edit</button>
-                <button onclick="deleteProduct(${product.id})">Delete</button>
+                <button class="view-btn" data-id="${product.id}">View</button>
+                <button class="edit-btn" data-id="${product.id}">Edit</button>
+                <button class="delete-btn" data-id="${product.id}">Delete</button>
             </td>
         `;
         tableBody.appendChild(row);
@@ -130,6 +130,19 @@ function renderProducts(filteredProducts = products) {
     const totalPages = Math.ceil(activatedProducts.length / productsPerPage);
     renderPagination(totalPages); // Renderiza a navegação de páginas
 }
+
+document.getElementById('productTableBody').addEventListener('click', (e) => {
+    if (e.target.classList.contains('view-btn')) {
+        const productId = parseInt(e.target.dataset.id);
+        viewProduct(productId); // Chama a função de visualização
+    } else if (e.target.classList.contains('edit-btn')) {
+        const productId = parseInt(e.target.dataset.id);
+        editProduct(productId); // Chama a função de edição
+    } else if (e.target.classList.contains('delete-btn')) {
+        const productId = parseInt(e.target.dataset.id);
+        deleteProduct(productId); // Chama a função de exclusão
+    }
+});
 
 // Ordena os produtos por nome ao iniciar
 products.sort((a, b) => a.name.localeCompare(b.name));
@@ -165,14 +178,14 @@ function sortProducts(event) {
     products.sort((a, b) => {
         const valueA = a[sortBy] || ""; // Valor padrão vazio
         const valueB = b[sortBy] || "";
-    
+
         if (sortBy === "id") {
             return Number(valueA) - Number(valueB);
         } else {
             return String(valueA).localeCompare(String(valueB));
         }
     });
-    
+
     renderProducts();
 }
 
@@ -191,27 +204,114 @@ document.getElementById("searchInput").addEventListener("input", (event) => {
 
 
 function viewProduct(id) {
-    const product = products.find(product => product.id === id);
+    const product = products.find(product => product.id === id); 
     if (product) {
+        // Preencher os detalhes do produto
         const productDetails = `
             <strong>ID:</strong> ${product.id}<br>
             <strong>Name:</strong> ${product.name}<br>
             <strong>Brand:</strong> ${product.brand}<br>
             <strong>Category:</strong> ${product.category}<br>
-            <strong>Description:</strong> ${product.description || "No description available."}<br>
-            <img src="${product.mainImage}" alt="${product.name}" style="width:200px;">
+            <strong>Short Description:</strong> ${product.shortDescription || "No description available."}<br>
+            <strong>Full Description:</strong> ${product.fullDescription}<br>
+            <strong>Price:</strong> ${product.price}<br>
+            <strong>Cost:</strong> ${product.cost}<br>
+            <strong>Discount:</strong> ${product.discount}<br>
+            <strong>In Stock:</strong> ${product.inStock}<br>
+            <strong>Dimensions:</strong> ${product.dimensions}<br>
+            <strong>Weight:</strong> ${product.weight}<br>
+            <strong>Details:</strong> ${product.details}<br>
+            <strong>Created At:</strong> ${product.createdAt}<br>
+            <strong>Updated At:</strong> ${product.updatedAt}<br>
+            <div class="action-buttons">
+                <button id="edit-btn">Edit</button>
+                <button id="delete-btn">Delete</button>
+            </div>
         `;
-
         document.getElementById('productDetails').innerHTML = productDetails;
 
+        // Configurar o slider de imagens
+        const imageSlider = document.getElementById('imageSlider');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        imageSlider.innerHTML = ""; // Limpar o slider
+
+        let currentIndex = 0;
+
+        // Função para gerar as imagens dinamicamente no slider
+        async function generateSliderImages(product) {
+            const images = [product.mainImage, ...(Array.isArray(product.extraImages) ? product.extraImages : [])];
+
+            if (images.length <= 1) {
+                prevBtn.style.display = "none";
+                nextBtn.style.display = "none";
+            } else {
+                prevBtn.style.display = "inline-block";
+                nextBtn.style.display = "inline-block";
+            }
+            
+            // Cria uma div para cada imagem
+            images.forEach(async (src, index) => {
+                const imageDiv = document.createElement('div');
+                imageDiv.classList.add('slider-image');
+                if (index === 0) imageDiv.classList.add('active'); // A primeira imagem será visível inicialmente
+
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = `Image ${index + 1}`;
+                img.style.width = "100%";
+                img.style.height = "100%";
+
+                imageDiv.appendChild(img);
+                imageSlider.appendChild(imageDiv);
+            });
+        }
+
+
+        // Função para atualizar o slider e alternar as imagens
+        async function updateSlider(index) {
+            const images = document.querySelectorAll('.slider-image');
+            // Esconde todas as imagens
+            images.forEach((image, i) => {
+                image.classList.remove('active');
+            });
+            // Mostra a imagem atual
+            images[index].classList.add('active');
+        }
+
+        // Evento para o botão "Next"
+        nextBtn.addEventListener('click', () => {
+            const totalImages = product.extraImages.length + 1; // Total de imagens (main + extras)
+            currentIndex = (currentIndex + 1) % totalImages; // Avança para a próxima imagem
+            updateSlider(currentIndex);
+        });
+
+        // Evento para o botão "Prev"
+        prevBtn.addEventListener('click', () => {
+            const totalImages = product.extraImages.length + 1; // Total de imagens (main + extras)
+            currentIndex = (currentIndex - 1 + totalImages) % totalImages; // Volta para a imagem anterior
+            updateSlider(currentIndex);
+        });
+
+        // Inicializa o slider com as imagens do produto
+        generateSliderImages(product);
+
+        // Mostrar o modal
         const modal = document.getElementById('productModal');
         modal.style.display = "block";
 
         // Fechar o modal
-        const closeBtn = document.querySelector('.close');
-        closeBtn.onclick = () => {
+        document.querySelector('.close').onclick = () => {
             modal.style.display = "none";
         };
+
+        document.getElementById('edit-btn').addEventListener('click', () => {
+            editProduct(product.id);
+        });
+        document.getElementById('delete-btn').addEventListener('click', () => {
+            deleteProduct(product.id);
+            modal.style.display = "none";
+        });
 
         // Fechar ao clicar fora do modal
         window.onclick = (event) => {
@@ -225,18 +325,46 @@ function viewProduct(id) {
 }
 
 
+
 function editProduct(id) {
     window.location.href = `edit-product.html?id=${id}`;
 }
 
 
-function deleteProduct(id) { 
-    if (confirm("Are you sure you want to delete this product?")) {
+function deleteProduct(id) {
+    const popup = document.querySelector(".card");
+    const overlay = document.querySelector(".overlay");
+    const cancelButton = document.querySelector("[name='cancel-btn']");
+    const deleteButton = document.querySelector("[name='delete-btn']");
+    const exitButton = document.querySelector("[name='exit-btn']");
+
+
+    // Exibe o pop-up
+    popup.classList.add("active");
+
+
+    // Evento para cancelar
+    cancelButton.onclick = () => {
+        popup.classList.remove("active");
+        overlay.classList.remove("active");
+    };
+
+    exitButton.onclick = () => {
+        popup.classList.remove("active");
+        overlay.classList.remove("active");
+    };
+
+    // Evento para confirmar exclusão
+    deleteButton.onclick = () => {
         products = products.filter(product => product.id !== id); // Atualiza localmente
         localStorage.setItem("products", JSON.stringify(products)); // Atualiza no localStorage
-        renderProducts();
-    }
+        renderProducts(); // Re-renderiza a tabela
+
+        popup.classList.remove("active");
+        overlay.classList.remove("active");
+    };
 }
+
 
 document.getElementById("addProduct").addEventListener("click", () => {
     const currentUser = JSON.parse(localStorage.getItem("currentUser")); // Certifique-se de obter os dados atualizados do usuário
@@ -246,7 +374,7 @@ document.getElementById("addProduct").addEventListener("click", () => {
     if (currentUser.role === "admin" || currentUser.role === "editor") {
         window.location.href = "add.html";
     } else {
-        alert("Apenas usuários com o papel de Administrador ou Editor podem acessar esta página.");
+        showError("Only users with the Administrator or Editor role can access this page.");
     }
 });
 
@@ -266,21 +394,42 @@ document.getElementById("logoutButton").addEventListener("click", () => {
 document.getElementById("resetProducts").addEventListener("click", () => {
     if (confirm("Reset products to initial state?")) {
         const resetProducts = JSON.parse(localStorage.getItem('resetProducts'));
-        
+
         // Atualiza a chave 'products' com o estado inicial
         localStorage.setItem('products', JSON.stringify(resetProducts));
-        
+
         // Atualiza a variável local
         products = resetProducts;
-        
+
         // Log para depuração
         console.log("Products after reset:", products);
-        
+
         // Reinicia para a primeira página (se necessário)
         currentPage = 1;
         products.sort((a, b) => a.name.localeCompare(b.name));
-                
+
         // Atualiza a exibição dos produtos
         renderProducts();
     }
 });
+
+function showError(message) {
+    const errorCard = document.getElementById('errorCard');
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = message;
+    errorCard.style.display = 'flex';
+  }
+  
+  function closeErrorCard() {
+    const errorCard = document.getElementById('errorCard');
+    errorCard.style.display = 'none';
+  }
+
+  function checkClickOutside(event) {
+    const card = document.querySelector('.error-card .cardError');
+    if (!card.contains(event.target)) {
+      closeErrorCard();
+    }
+  }
+  
+  
