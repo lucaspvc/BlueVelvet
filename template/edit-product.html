@@ -4,49 +4,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Product</title>
-  <link rel="stylesheet" href="add-style.css">
+  <title>Edit Product - Blue Velvet Music Store</title>
+  <link rel="stylesheet" href="../static/style/add-style.css">
 </head>
 
 <body>
-  <h1>Blue Velvet Music Store</h1>
-  <h2>Edit Product</h2>
-  <form id="edit-product-form">
-    <!-- Conteúdo do formulário é idêntico -->
-    <input type="text" id="name" name="name" placeholder="Product Name" required>
-    <span class="error-message" id="name-error"></span>
+  <header>
+    <h1>Blue Velvet Music Store</h1>
+    <h2>Edit Product</h2>
+  </header>
+
+  <main>
     <form id="add-product-form">
+      <!-- Product Name -->
+      <label for="name">Product Name</label>
       <input type="text" id="name" name="name" placeholder="Product Name" required>
       <span class="error-message" id="name-error"></span>
 
+      <!-- Descriptions -->
+      <label for="short-description">Short Description</label>
       <textarea id="short-description" name="shortDescription" placeholder="Short Description" required></textarea>
       <span class="error-message" id="shortDescription-error"></span>
 
+      <label for="full-description">Full Description</label>
       <textarea id="full-description" name="fullDescription" placeholder="Full Description" required></textarea>
       <span class="error-message" id="fullDescription-error"></span>
 
+      <!-- Brand and Category -->
+      <label for="brand">Brand</label>
       <input type="text" id="brand" name="brand" placeholder="Brand" required>
       <span class="error-message" id="brand-error"></span>
 
+      <label for="category">Category</label>
       <input type="text" id="category" name="category" placeholder="Category" required>
       <span class="error-message" id="category-error"></span>
 
+      <!-- Images -->
       <label for="main-image">Main Image</label>
-      <input type="file" id="main-image" name="mainImage" accept="image/png" required>
+      <input type="file" id="main-image" name="mainImage" accept="image/png">
       <span class="error-message" id="mainImage-error"></span>
 
-      <label for="extra-images">Extra Image</label>
+      <label for="extra-images">Extra Images</label>
       <input type="file" id="extra-images" name="extraImages" accept="image/png" multiple>
 
+      <!-- Pricing -->
       <div class="side-container">
+        <label for="price">Price</label>
         <input type="number" id="price" name="price" step="0.01" placeholder="Price" required>
         <span class="error-message" id="price-error"></span>
 
+        <label for="cost">Cost</label>
         <input type="number" id="cost" name="cost" step="0.01" placeholder="Cost">
         <span class="error-message" id="cost-error"></span>
-      </div>
 
-      <input type="number" id="discount" name="discount" step="0.01" placeholder="Discount">
+        <label for="discount">Discount(%)</label>
+        <input type="number" id="discount" name="discount" step="0.01" placeholder="Discount">
+      </div>
 
       <div class="input-group" for="activated">
         <div class="right-container">
@@ -60,7 +73,7 @@
               <input value="false" name="activated" id="activated" type="radio" />
               <span>No</span>
             </label>
-            <span class="selection"></span>
+            <span class="selectionEdit"></span>
           </div>
         </div>
 
@@ -77,30 +90,49 @@
               <input value="false" name="inStock" id="inStock" type="radio" />
               <span>No</span>
             </label>
-            <span class="selection"></span>
+            <span class="selectionEdit"></span>
           </div>
         </div>
       </div>
 
+      <!-- Dimensions and Weight -->
+      <label for="dimensions">Dimensions (L x W x H in inches)</label>
+      <input type="text" id="dimensions" name="dimensions" placeholder="Dimensions">
 
-      <input type="text" id="dimensions" name="dimensions" placeholder="Dimensions Length x Width x Height (inch)">
+      <label for="weight">Weight (pounds)</label>
+      <input type="number" id="weight" name="weight" step="0.01" placeholder="Weight">
 
-      <input type="number" id="weight" name="weight" step="0.01" placeholder="Weight (pounds)">
-
+      <!-- Product Details -->
       <div id="details-container">
         <div class="detail-row">
-          <textarea class="detail-textarea" name="details-name" placeholder="Detail Name"></textarea>
-          <textarea class="detail-textarea" name="details-value" placeholder="Detail Value"></textarea>
+          <input type="text" class="detail-input" name="details-name" placeholder="Detail Name">
+          <input type="text" class="detail-input" name="details-value" placeholder="Detail Value">
           <button type="button" class="add-detail-button" onclick="addDetail()">Add Detail</button>
         </div>
       </div>
 
+      <!-- Buttons -->
       <div class="side-container">
-        <button type="button" id="return-btn" onclick="returnDashboard()">Return to Dashboard</button>
-        <button type="button" id="save-btn" onclick="saveProductChanges()">Save Changes</button>
+        <button type="button" id="return-btn" name="return-btn" onclick="returnToPage()">Return</button>
+        <button type="button" id="save-btn" name="save-btn" onclick="saveProductChanges()">Save Changes</button>
 
       </div>
     </form>
-  </form>
-  <script src="edit.js"></script>
+  </main>
+
+  <div class="error-card" id="errorCard" onclick="checkClickOutside(event)" style="display: none;">
+    <div class="cardError">
+      <div class="cardError-content">
+        <h1 class="cardError-heading">Error</h1>
+        <p class="cardError-description" id="errorMessage">Default error message.</p>
+      </div>
+      <div class="cardErro-button-wrapper">
+        <button class="cardError-button primary" onclick="closeErrorCard()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../static/script/edit.js"></script>
 </body>
+
+</html>

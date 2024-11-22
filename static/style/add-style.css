@@ -35,7 +35,6 @@ textarea {
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
-  /* Inclui padding e borda no cálculo do tamanho total */
 }
 
 h1 {
@@ -68,12 +67,17 @@ button:hover {
 .side-container {
   display: flex;
   align-items: center;
-  /* Alinha verticalmente ao centro */
   justify-content: center;
-  /* Centraliza horizontalmente */
   gap: 2em;
-  /* Espaço entre os campos */
   box-sizing: border-box;
+}
+
+@media screen and (max-width: 600px) {
+  .side-container {
+    flex-direction: column;
+    display: block;
+  }
+  
 }
 
 
@@ -105,17 +109,13 @@ button:hover {
 
 textarea {
   resize: vertical;
-  /* Permite redimensionar apenas horizontalmente */
   width: 100%;
-  /* Garante que o tamanho inicial seja ajustado ao container */
   max-width: 100%;
-  /* Impede que a caixa ultrapasse a largura do container */
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
-  /* Inclui padding e borda no cálculo do tamanho total */
 }
 
 .detail-row {
@@ -127,24 +127,16 @@ textarea {
 
 .detail-row textarea {
   resize: none;
-  /* Evita redimensionamento desnecessário */
   height: 40px;
-  /* Define uma altura fixa para alinhamento */
   font-size: 14px;
-  /* Ajusta o tamanho da fonte */
 }
 
 .add-detail-button {
   width: auto;
-  /* Tamanho ajustado ao conteúdo */
   padding: 5px 10px;
-  /* Reduz o espaçamento interno */
   font-size: 14px;
-  /* Ajusta o tamanho da fonte */
   background-color: #333;
-  /* Cor do fundo */
   color: #fff;
-  /* Cor do texto */
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -152,15 +144,12 @@ textarea {
 
 .add-detail-button:hover {
   background-color: #555;
-  /* Cor de fundo ao passar o mouse */
 }
 
-/* Estilo para a mensagem de erro */
 .error-message {
   color: red;
   font-size: 12px;
   display: none;
-  /* Por padrão, a mensagem de erro estará oculta */
   margin-top: 5px;
 }
 
@@ -176,7 +165,6 @@ select.error:focus {
   border-color: darkred;
 }
 
-/* Exibir a mensagem de erro */
 .error-message.show {
   display: block;
 }
@@ -228,7 +216,34 @@ select.error:focus {
   border-radius: 10px;
   transition: transform 0.25s ease;
   z-index: 1;
+  display: none;
 }
+
+.selectionEdit {
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: rgb(0, 0, 0);
+  border-radius: 10px;
+  transition: transform 0.25s ease;
+  z-index: 1;
+  display: none;
+}
+
+.radio-input label:has(input:checked)~.selectionEdit {
+  display: block;
+}
+
+.radio-input label:nth-child(1):has(input:checked)~.selectionEdit {
+  transform: translateX(0);
+}
+
+.radio-input label:nth-child(2):has(input:checked)~.selectionEdit {
+  transform: translateX(100%);
+}
+
 
 .radio-input label:has(input:checked) {
   color: rgb(178, 178, 178);
@@ -254,6 +269,14 @@ select.error:focus {
   margin-bottom: 1em;
 }
 
+@media screen and (max-width: 600px) {
+  .input-group {
+    flex-direction: column;
+    display: block;
+  }
+  
+}
+
 .group-label {
   font-weight: bold;
   font-size: 16px;
@@ -267,4 +290,111 @@ select.error:focus {
   justify-content: right;
   gap: 0em;
   box-sizing: border-box;
+}
+
+.error-card .card {
+  background-color: #ffe4e4;
+  color: #d32f2f;
+  box-shadow: 0px 10px 20px rgba(211, 47, 47, 0.2);
+}
+
+.error-card .card-heading {
+  color: #d32f2f;
+}
+
+.error-card .primary {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.error-card .primary:hover {
+  background-color: #b71c1c;
+}
+
+.error-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardError {
+  width: 300px;
+  height: fit-content;
+  background: rgb(255, 255, 255);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: center;
+  gap: 20px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.068);
+}
+
+.cardError-content {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cardError-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: rgb(27, 27, 27);
+}
+
+.cardError-description {
+  font-weight: 100;
+  color: rgb(102, 102, 102);
+}
+
+.cardError-button-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardError-button {
+  width: 100%;
+  height: 35px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primary {
+  background-color: rgb(255, 114, 109);
+  color: white;
+}
+
+.primary:hover {
+  background-color: rgb(255, 73, 66);
+}
+
+form {
+  width: 100%;
+  padding: 10px;
+  margin: 10px auto;
+}
+
+.detail-row {
+  flex-wrap: wrap;
+}
+
+.detail-row textarea {
+  width: 100%;
+  margin: 5px 0;
 }

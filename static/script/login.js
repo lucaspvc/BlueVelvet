@@ -1,7 +1,7 @@
 // Obtém os dados do banco de dados (usuários)
 const users = JSON.parse(localStorage.getItem('users'));
 
-// Lida com o login do formulário
+
 document.getElementById('loginForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -31,15 +31,15 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 
         // Redireciona para a página apropriada com base no papel do usuário
         if (["admin", "salesmanager", "shippingmanager"].includes(user.role)) {
-            alert(`Login successful! Welcome, ${user.name} (${user.role}).`);
-            window.location.href = "product-management.html"; // Painel de gestão de produtos
-        } else {
-            alert(`Login successful! Welcome, ${user.name} (${user.role}).`);
-            window.location.href = "user-dashboard.html"; // Página para outros usuários
+            window.location.href = "dashboard.html"; // Painel de gestão de produtos
+        } else if(user.role === "editor") {
+            window.location.href = "database.html";          
+        }else{
+            document.getElementById('errorMessage').textContent = "Only administrator, salesmanager and shippingmanager can access the dashboard.";
         }
     } else {
         // Exibe mensagem de erro caso as credenciais sejam inválidas
-        document.getElementById('errorMessage').textContent = "E-mail ou palavra-passe incorrectos. Por favor, tente novamente.";
+        document.getElementById('errorMessage').textContent = "Incorrect email or password. Please try again.";
     }
 });
 
@@ -48,3 +48,24 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 document.getElementById('registerLink').addEventListener('click', function () {
     window.location.href = "admin-login.html";
 });
+
+
+function showError(message) {
+    const errorCard = document.getElementById('errorCard');
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = message;
+    errorCard.style.display = 'flex';
+  }
+  
+  function closeErrorCard() {
+    const errorCard = document.getElementById('errorCard');
+    errorCard.style.display = 'none';
+  }
+
+  function checkClickOutside(event) {
+    const card = document.querySelector('.error-card .cardError');
+    if (!card.contains(event.target)) {
+      closeErrorCard();
+    }
+  }
+  

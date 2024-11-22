@@ -11,7 +11,7 @@ function isAdmin() {
 // Ao carregar a página, verifica se o usuário tem permissão para registrar novos usuários
 window.onload = function () {
     if (!isAdmin()) {
-        alert("Apenas administradores podem registrar novos usuários.");
+        showError("Only administrators can register new users.");
         window.location.href = "login.html"; // Redireciona para a página de login
     }
 };
@@ -26,7 +26,7 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
     const role = document.getElementById('role').value;
 
     if (role === "") {
-        document.getElementById('registerErrorMessage').textContent = "Por favor, selecione uma função.";
+        document.getElementById('registerErrorMessage').textContent = "Please select a role.";
         return;
     }
 
@@ -34,7 +34,27 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
     const updatedUsers = JSON.parse(localStorage.getItem('users')) || [];
     updatedUsers.push({ name, email, password, role });
     localStorage.setItem('users', JSON.stringify(updatedUsers));
-
-    alert("Usuário registrado com sucesso!");
-    window.location.href = "login.html"; // Redireciona para a página de login
+    localStorage.removeItem('currentUserEmail');
+    window.location.href = "login.html";
 });
+
+
+function showError(message) {
+    const errorCard = document.getElementById('errorCard');
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = message;
+    errorCard.style.display = 'flex';
+  }
+  
+  function closeErrorCard() {
+    const errorCard = document.getElementById('errorCard');
+    errorCard.style.display = 'none';
+  }
+
+  function checkClickOutside(event) {
+    const card = document.querySelector('.error-card .cardError');
+    if (!card.contains(event.target)) {
+      closeErrorCard();
+    }
+  }
+  

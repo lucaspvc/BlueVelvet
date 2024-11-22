@@ -97,8 +97,8 @@ function filterActivatedProducts(products) {
 }
 
 function renderProducts(filteredProducts = products) {
-    // Filtra produtos ativados
-    const activatedProducts = filterActivatedProducts(filteredProducts);
+    // Aplica o filtro opcionalmente
+    const productsToRender = filteredProducts;
 
     const tableBody = document.getElementById("productTableBody");
     tableBody.innerHTML = "";
@@ -106,7 +106,7 @@ function renderProducts(filteredProducts = products) {
     // Paginação
     const start = (currentPage - 1) * productsPerPage;
     const end = start + productsPerPage;
-    const paginatedProducts = activatedProducts.slice(start, end);
+    const paginatedProducts = productsToRender.slice(start, end);
 
     // Renderiza produtos paginados
     paginatedProducts.forEach(product => {
@@ -122,31 +122,31 @@ function renderProducts(filteredProducts = products) {
                 <button class="edit-btn" data-id="${product.id}">Edit</button>
                 <button class="delete-btn" data-id="${product.id}">Delete</button>
             </td>
+            <td>${product.activated}</td>
         `;
         tableBody.appendChild(row);
     });
 
     // Total de páginas baseado nos produtos ativados
-    const totalPages = Math.ceil(activatedProducts.length / productsPerPage);
+    const totalPages = Math.ceil(productsToRender.length / productsPerPage);
     renderPagination(totalPages); // Renderiza a navegação de páginas
 }
 
 document.getElementById('productTableBody').addEventListener('click', (e) => {
     if (e.target.classList.contains('view-btn')) {
         const productId = parseInt(e.target.dataset.id);
-        viewProduct(productId); // Chama a função de visualização
+        viewProduct(productId);
     } else if (e.target.classList.contains('edit-btn')) {
         const productId = parseInt(e.target.dataset.id);
-        editProduct(productId); // Chama a função de edição
+        editProduct(productId);
     } else if (e.target.classList.contains('delete-btn')) {
         const productId = parseInt(e.target.dataset.id);
-        deleteProduct(productId); // Chama a função de exclusão
+        deleteProduct(productId);
     }
 });
 
-// Ordena os produtos por nome ao iniciar
-products.sort((a, b) => a.name.localeCompare(b.name));
 // Inicialização
+products.sort((a, b) => a.name.localeCompare(b.name));
 renderProducts();
 
 document.getElementById("nextPage").addEventListener("click", () => {
@@ -167,7 +167,6 @@ document.getElementById("sortOptions").removeEventListener("change", sortProduct
 document.getElementById("sortOptions").addEventListener("change", sortProducts);
 
 products = JSON.parse(localStorage.getItem("products")); // Recarrega os dados
-// Ordena os produtos por nome ao iniciar
 products.sort((a, b) => a.name.localeCompare(b.name));
 renderProducts();
 
@@ -194,16 +193,25 @@ document.getElementById("searchInput").addEventListener("input", (event) => {
     const filteredProducts = JSON.parse(localStorage.getItem("products")).filter(product => {
         return (
             product.name.toLowerCase().includes(query) ||
+            product.shortDescription.toLowerCase().includes(query) ||
+            product.fullDescription.toLowerCase().includes(query) ||
             product.brand.toLowerCase().includes(query) ||
             product.category.toLowerCase().includes(query)
         );
     });
     currentPage = 1;
-    renderProducts(filteredProducts); // Passe a lista filtrada para renderizar
+    renderProducts(filteredProducts); 
 });
 
 
+
 function viewProduct(id) {
+    // Restringir acesso apenas para administradores
+    if (currentUser.role !== 'admin') {
+        showError("Access denied! Only administrators can view product details.");
+        return; // Impede a execução da função
+    }
+
     const product = products.find(product => product.id === id); 
     if (product) {
         // Preencher os detalhes do produto
@@ -271,11 +279,9 @@ function viewProduct(id) {
         // Função para atualizar o slider e alternar as imagens
         async function updateSlider(index) {
             const images = document.querySelectorAll('.slider-image');
-            // Esconde todas as imagens
             images.forEach((image, i) => {
                 image.classList.remove('active');
             });
-            // Mostra a imagem atual
             images[index].classList.add('active');
         }
 
@@ -320,18 +326,24 @@ function viewProduct(id) {
             }
         };
     } else {
-        alert("Product not found!");
+        showError("Product not found!");
     }
 }
 
 
 
 function editProduct(id) {
-    window.location.href = `edit-product.html?id=${id}`;
+    window.location.href = `edit-product.html?id=${id}&source=database`;
 }
 
 
 function deleteProduct(id) {
+    // Restringir acesso apenas para administradores
+    if (currentUser.role !== 'admin' && currentUser.role !== 'editor') {
+        showError("Access denied! Only administrators or editors can delete product.");
+        return; // Impede a execução da função
+    }
+
     const popup = document.querySelector(".card");
     const overlay = document.querySelector(".overlay");
     const cancelButton = document.querySelector("[name='cancel-btn']");
@@ -356,9 +368,9 @@ function deleteProduct(id) {
 
     // Evento para confirmar exclusão
     deleteButton.onclick = () => {
-        products = products.filter(product => product.id !== id); // Atualiza localmente
-        localStorage.setItem("products", JSON.stringify(products)); // Atualiza no localStorage
-        renderProducts(); // Re-renderiza a tabela
+        products = products.filter(product => product.id !== id);
+        localStorage.setItem("products", JSON.stringify(products));
+        renderProducts(); 
 
         popup.classList.remove("active");
         overlay.classList.remove("active");
@@ -367,26 +379,18 @@ function deleteProduct(id) {
 
 
 document.getElementById("addProduct").addEventListener("click", () => {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser")); // Certifique-se de obter os dados atualizados do usuário
-    console.log(currentUser);
-    console.log(currentUser.role);
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
     if (currentUser.role === "admin" || currentUser.role === "editor") {
-        window.location.href = "add.html";
+        window.location.href = `add.html?source=database`;
     } else {
         showError("Only users with the Administrator or Editor role can access this page.");
     }
 });
 
 
-document.getElementById("logoutButton").addEventListener("click", () => {
-    // Remove o usuário atualmente logado
+document.getElementById("logoutButton").addEventListener("click", () =>{
     localStorage.removeItem("currentUser");
-
-    // Exibe uma mensagem de sucesso
-    alert("Logged out successfully!");
-
-    // Redireciona para a página de login
     window.location.href = "login.html";
 });
 
@@ -394,21 +398,10 @@ document.getElementById("logoutButton").addEventListener("click", () => {
 document.getElementById("resetProducts").addEventListener("click", () => {
     if (confirm("Reset products to initial state?")) {
         const resetProducts = JSON.parse(localStorage.getItem('resetProducts'));
-
-        // Atualiza a chave 'products' com o estado inicial
         localStorage.setItem('products', JSON.stringify(resetProducts));
-
-        // Atualiza a variável local
         products = resetProducts;
-
-        // Log para depuração
-        console.log("Products after reset:", products);
-
-        // Reinicia para a primeira página (se necessário)
         currentPage = 1;
         products.sort((a, b) => a.name.localeCompare(b.name));
-
-        // Atualiza a exibição dos produtos
         renderProducts();
     }
 });

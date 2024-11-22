@@ -1,3 +1,17 @@
+function getSourcePage() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('source') || 'dashboard'; // Default para dashboard
+}
+
+function returnToSourcePage() {
+  const sourcePage = getSourcePage();
+  if (sourcePage === 'database') {
+    window.location.href = "database.html";
+  } else {
+    window.location.href = "dashboard.html";
+  }
+}
+
 async function addProduct() {
   const form = document.getElementById('add-product-form');
   const formData = new FormData(form);
@@ -187,8 +201,8 @@ function createDetailRow() {
   return newRow;
 }
 
-function returnDashboard() {
-  window.location.href = "product-management.html";
+function returnPage() {
+  returnToSourcePage();
 }
 
 

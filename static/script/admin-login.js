@@ -1,10 +1,6 @@
 // Obtém os dados do banco de dados (usuários)
 const users = JSON.parse(localStorage.getItem('users')) || [];
 
-// Exibe os usuários para depuração
-console.log(users);
-
-
 window.onload = function () {
     const currentPage = window.location.pathname;
 
@@ -13,7 +9,7 @@ window.onload = function () {
         const currentUser = users.find(user => user.email === currentUserEmail);
 
         if (!currentUser || currentUser.role !== "admin") {
-            alert("Apenas administradores podem acessar esta página.");
+            showError("Only administrators can access this page.");
             window.location.href = "admin-login.html"; // Redireciona para a página de login de administrador
         }
     }
@@ -27,19 +23,33 @@ document.getElementById('adminLoginForm').addEventListener('submit', function (e
     const email = document.getElementById('adminEmail').value;
     const password = document.getElementById('adminPassword').value;
 
-    console.log(`Tentativa de login: ${email}, ${password}`);
-
     // Verifica se o usuário existe e se é administrador
     const user = users.find(u => u.email === email && u.password === password);
 
     if (user && user.role === "admin") {
         // Autentica e redireciona para a página de registro
         localStorage.setItem('currentUserEmail', email);
-        alert("Login de administrador bem-sucedido! Redirecionando...");
         window.location.href = "register.html";
     } else {
-        document.getElementById('adminErrorMessage').textContent = "Credenciais incorretas ou o usuário não é administrador. Tente novamente.";
+        document.getElementById('adminErrorMessage').textContent = "Incorrect credentials or the user is not an administrator. Please try again.";
     }
 });
 
+function showError(message) {
+    const errorCard = document.getElementById('errorCard');
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = message;
+    errorCard.style.display = 'flex';
+  }
+  
+  function closeErrorCard() {
+    const errorCard = document.getElementById('errorCard');
+    errorCard.style.display = 'none';
+  }
 
+  function checkClickOutside(event) {
+    const card = document.querySelector('.error-card .cardError');
+    if (!card.contains(event.target)) {
+      closeErrorCard();
+    }
+  }
