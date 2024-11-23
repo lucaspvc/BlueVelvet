@@ -6,9 +6,9 @@ function getSourcePage() {
 function returnToSourcePage() {
   const sourcePage = getSourcePage();
   if (sourcePage === 'database') {
-    window.location.href = "../BlueVelvet/template/database.html";
+    window.location.href = "/BlueVelvet/template/database.html";
   } else {
-    window.location.href = "../BlueVelvet/template/dashboard.html";
+    window.location.href = "/BlueVelvet/template/dashboard.html";
   }
 }
 

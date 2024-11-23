@@ -12,7 +12,7 @@ function isAdmin() {
 window.onload = function () {
     if (!isAdmin()) {
         showError("Only administrators can register new users.");
-        window.location.href = "../BlueVelvet/template/login.html"; // Redireciona para a página de login
+        window.location.href = "/BlueVelvet/template/login.html"; // Redireciona para a página de login
     }
 };
 
@@ -35,7 +35,7 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
     updatedUsers.push({ name, email, password, role });
     localStorage.setItem('users', JSON.stringify(updatedUsers));
     localStorage.removeItem('currentUserEmail');
-    window.location.href = "../BlueVelvet/template/login.html";
+    window.location.href = "/BlueVelvet/template/login.html";
 });
 
 

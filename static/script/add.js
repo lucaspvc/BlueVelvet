@@ -6,9 +6,9 @@ function getSourcePage() {
 function returnToSourcePage() {
   const sourcePage = getSourcePage();
   if (sourcePage === 'database') {
-    window.location.href = "../BlueVelvet/template/database.html";
+    window.location.href = "/BlueVelvet/template/database.html";
   } else {
-    window.location.href = "../BlueVelvet/template/dashboard.html";
+    window.location.href = "/BlueVelvet/template/dashboard.html";
   }
 }
 
@@ -96,7 +96,7 @@ async function addProduct() {
   }
   if (!newProduct.mainImage) {
     // Atribui uma imagem padrão se o campo principal estiver vazio
-    newProduct.mainImage = '../BlueVelvet/static/images/logoPreto.png';
+    newProduct.mainImage = '/BlueVelvet/static/images/logoPreto.png';
   }
 
   if (!isValid) {
