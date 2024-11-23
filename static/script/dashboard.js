@@ -17,7 +17,7 @@ const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 document.getElementById("welcomeMessage").textContent = `Welcome, ${currentUser.name} (${currentUser.role})`;
 
 let currentPage = 1;
-const productsPerPage = 5;
+const productsPerPage = 10;
 
 // Função para calcular os produtos da página atual
 function getProductsForCurrentPage() {
@@ -332,7 +332,11 @@ function viewProduct(id) {
 
 
 function editProduct(id) {
-    window.location.href = `edit-product.html?id=${id}`;
+    if (currentUser.role === 'shippingmanager') {
+        showError("Access denied! Only administrators, editors or salesperson can edit product.");
+        return; 
+    }
+    window.location.href = `../BlueVelvet/template/edit-product.html?id=${id}`;
 }
 
 
@@ -381,7 +385,7 @@ document.getElementById("addProduct").addEventListener("click", () => {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
     if (currentUser.role === "admin" || currentUser.role === "editor") {
-        window.location.href = `add.html?source=dashboard`;
+        window.location.href = `../BlueVelvet/template/add.html?source=dashboard`;
     } else {
         showError("Only users with the Administrator or Editor role can access this page.");
     }
@@ -391,7 +395,7 @@ document.getElementById("addProduct").addEventListener("click", () => {
 document.getElementById("logoutButton").addEventListener("click", () => {
     // Remove o usuário atualmente logado
     localStorage.removeItem("currentUser");
-    window.location.href = "login.html";
+    window.location.href = "../BlueVelvet/template/login.html";
 });
 
 

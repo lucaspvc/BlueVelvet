@@ -30,10 +30,10 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         localStorage.setItem('currentUser', JSON.stringify(user));
 
         // Redireciona para a página apropriada com base no papel do usuário
-        if (["admin", "salesmanager", "shippingmanager"].includes(user.role)) {
-            window.location.href = "dashboard.html"; // Painel de gestão de produtos
-        } else if(user.role === "editor") {
-            window.location.href = "database.html";          
+        if (["salesmanager", "shippingmanager"].includes(user.role)) {
+            window.location.href = "../BlueVelvet/template/dashboard.html"; // Painel de gestão de produtos
+        } else if(["admin", "editor"].includes(user.role)) {
+            window.location.href = "../BlueVelvet/template/database.html";          
         }else{
             document.getElementById('errorMessage').textContent = "Only administrator, salesmanager and shippingmanager can access the dashboard.";
         }
@@ -46,7 +46,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 
 // Redireciona para a página de login do administrador
 document.getElementById('registerLink').addEventListener('click', function () {
-    window.location.href = "admin-login.html";
+    window.location.href = "../BlueVelvet/template/admin-login.html";
 });
 
 
