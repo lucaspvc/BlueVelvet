@@ -76,6 +76,16 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.save(produtoModel));
     }
 
+    @DeleteMapping
+    public ResponseEntity<Object> deleteAll(){
+        if(productService.count() == 0){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .body("Produto não encontrados.");
+        }
+        productService.deleteAll();
+        return ResponseEntity.status(HttpStatus.OK).body("Produtos deletados com sucesso.");
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteProduto(@PathVariable(value = "id") Long id){
         Optional<ProductModel> produtoModelOpt = productService.findById(id);

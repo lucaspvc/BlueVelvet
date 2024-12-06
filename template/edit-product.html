@@ -64,7 +64,7 @@
           </div>
         </div>
       </div>
-  
+
       <div class="input-group">
         <div class="right-container">
           <label class="group-label">In Stock</label>
@@ -98,7 +98,7 @@
       <input type="text" id="dimensions-unit" name="dimensions-unit" placeholder="Unit (e.g., cm, inches)">
 
       <label for="dimensions-unit-weight">Weight Unit</label>
-      <input type="text" id="dimensions-unit-weight" name="dimensions-unit-weight" placeholder="Unit (e.g., kg, lbs)">
+      <input type="text" id="dimensions-unit-weight" name="dimensions-unit-weight" placeholder="Unit (e.g., kg, lbs)">     
 
       <!-- Product Details -->
       <div id="details-container">
@@ -108,6 +108,8 @@
           <button type="button" class="add-detail-button" onclick="addDetail()">Add Detail</button>
         </div>
       </div>
+      <button type="button" class="add-detail-button" onclick="addDetail()">Add Detail</button>
+
 
       <!-- Buttons -->
       <div class="side-container">
@@ -116,6 +118,17 @@
       </div>
     </form>
   </main>
+  <div class="error-card" id="errorCard" onclick="checkClickOutside(event)" style="display: none;">
+    <div class="cardError">
+      <div class="cardError-content">
+        <h1 class="cardError-heading">Error</h1>
+        <p class="cardError-description" id="errorMessage">Default error message.</p>
+      </div>
+      <div class="cardErro-button-wrapper">
+        <button class="cardError-button primary" onclick="closeErrorCard()">OK</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/static/script/edit.js"></script>
 </body>

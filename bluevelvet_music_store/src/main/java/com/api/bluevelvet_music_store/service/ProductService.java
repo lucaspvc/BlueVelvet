@@ -49,9 +49,18 @@ public class ProductService {
         return productRepository.searchProdutos(name,pageable);
     }
 
+    public long count(){
+        return productRepository.count();
+    }
+
     @Transactional
     public void delete(ProductModel productModel) {
         productRepository.delete(productModel);
+    }
+
+    @Transactional
+    public void deleteAll(){
+        productRepository.deleteAll();
     }
 
     public ProductModel copyProperties(ProductDto productDto, ProductModel productModel){

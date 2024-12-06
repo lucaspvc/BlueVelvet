@@ -44,36 +44,51 @@ async function loadProductForEdit(productId) {
     document.getElementById('dimensions-unit').value = dimensions.unit ?? '';
     document.getElementById('dimensions-unit-weight').value = dimensions.unitWeight ?? '';
 
+    // Preencher imagens
+    if (data.mainImage) {
+      const mainImageElement = document.getElementById('main-image');
+      const mainImagePreview = document.createElement('img');
+      mainImagePreview.src = data.mainImage;
+      mainImagePreview.alt = 'Main Image Preview';
+      mainImagePreview.style.maxWidth = '100px';
+      mainImagePreview.style.maxHeight = '100px';
+      mainImageElement.insertAdjacentElement('afterend', mainImagePreview);
+    }
+
+    if (data.featuredImages?.length) {
+      const extraImagesContainer = document.getElementById('extra-images');
+      data.featuredImages.forEach((featuredImage) => {
+        const imagePreview = document.createElement('img');
+        imagePreview.src = featuredImage.images;
+        imagePreview.alt = 'Extra Image Preview';
+        imagePreview.style.maxWidth = '100px';
+        imagePreview.style.maxHeight = '100px';
+        extraImagesContainer.insertAdjacentElement('afterend', imagePreview);
+      });
+    }
+
     // Marcar os botões de rádio para "inStock" e "enabled"
     document.querySelector(`input[name="inStock"][value="${data.inStock}"]`)?.click();
     document.querySelector(`input[name="enabled"][value="${data.enabled}"]`)?.click();
 
-    // Preencher as imagens principais e destacadas
-    document.getElementById('main-image').src = data.mainImage ?? '';
-    const featuredImagesContainer = document.getElementById('featured-images-container');
-    featuredImagesContainer.innerHTML = ''; // Limpa as imagens existentes
-
-    if (Array.isArray(data.featuredImages) && data.featuredImages.length > 0) {
-      data.featuredImages.forEach(img => {
-        const imgElement = document.createElement('img');
-        imgElement.src = img.image;
-        imgElement.alt = 'Featured Image';
-        featuredImagesContainer.appendChild(imgElement);
-        // Adicionar imagens
-      });
-    }
-
-    // Configurar os detalhes
+    // Preencher os detalhes
     const detailsContainer = document.getElementById('details-container');
-    detailsContainer.innerHTML = ''; // Limpa as linhas existentes
-    if(Array.isArray(data.details) && data.details.length > 0) {
-      data.details.forEach(details => {
-        const row = createDetailRow();
-        row.querySelector('[name="details-name"]').value = details.name ?? '';
-        row.querySelector('[name="details-value"]').value = details.value ?? '';
-        detailsContainer.appendChild(row);
-      });
-    }
+
+    // Construir o HTML para os detalhes, incluindo tanto os nomes quanto os valores
+    const detailsHTML = data.details.map(detail => {
+      return `
+        <div class="detail-row" id="idRow-${detail.id}">
+          <label for="details-name">Details</label>
+          <input type="text" name="details-name" value="${detail.name}" />
+          <input type="text" name="details-value" value="${detail.value}" />
+          <button type="button" class="delete-detail-button" onclick="deleteRow(${detail.id})">Delete</button>
+        </div>
+      `;
+    }).join('');
+
+    // Atualizar o conteúdo de detailsContainer com o HTML gerado
+    detailsContainer.innerHTML = detailsHTML;
+
 
     // Desabilitar campos para "salesmanager"
     if (getUserRole() === 'salesmanager') {
@@ -90,6 +105,34 @@ async function loadProductForEdit(productId) {
   }
 }
 
+function deleteRow(id) {
+  // Remove a linha do DOM
+  const row = document.getElementById(`idRow-${id}`);
+  if (row) row.remove();
+
+  // Atualiza os detalhes no JSON local
+  const updatedDetails = data.details.filter(detail => detail.id !== id);
+
+  // Envia os detalhes atualizados ao backend
+  fetch(`http://localhost:8080/produtos/${id}`, {
+    method: 'PUT', // ou 'PATCH', dependendo do suporte do backend
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ details: updatedDetails })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Failed to update product after deleting detail with ID ${id}`);
+    }
+    console.log(`Detail with ID ${id} deleted and product updated successfully.`);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+
 async function saveProductChanges() {
   console.log('Botão clicado');
   const form = document.getElementById('add-product-form');
@@ -102,15 +145,26 @@ async function saveProductChanges() {
   clearErrors();
 
   const userRole = getUserRole();
-  const products = JSON.parse(localStorage.getItem('products')) || [];
-  const productIndex = products.findIndex((p) => p.id === productId);
 
-  if (productIndex === -1) {
-    showError('Erro ao salvar: Produto não encontrado!');
+  // Verificar se o productId está presente e é um número válido
+  if (isNaN(productId)) {
+    showError('Erro: ID do produto inválido.');
     return;
   }
 
-  const originalProduct = products[productIndex];
+  // Fazer uma requisição para buscar o produto pelo ID no backend
+  let originalProduct;
+  try {
+    const response = await fetch(`http://localhost:8080/produtos/${productId}`);
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar o produto: ${response.status}`);
+    }
+    originalProduct = await response.json();
+  } catch (error) {
+    console.error('Erro ao buscar o produto:', error);
+    showError(`Erro ao buscar o produto: ${error.message}`);
+    return;
+  }
 
   // Criar um objeto atualizado
   const updatedProduct = {
@@ -205,9 +259,7 @@ async function saveProductChanges() {
   // Atualizar o produto localmente ou enviar para o backend
   if (userRole === 'salesmanager') {
     // "Salesmanager" pode alterar apenas o preço
-    products[productIndex] = { ...originalProduct, price: updatedProduct.price, updatedAt: updatedProduct.updatedAt };
-  } else {
-    products[productIndex] = updatedProduct;
+    updatedProduct.price = parseFloat(formData.get('price')) || originalProduct.price;
   }
 
   try {
@@ -229,7 +281,6 @@ async function saveProductChanges() {
   }
 }
 
-
 // Carregar o produto automaticamente quando a página abrir
 document.addEventListener('DOMContentLoaded', () => {
   try {
@@ -249,31 +300,28 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-function addInitialDetailRow() {
-  const container = document.getElementById('details-container');
+function addDetail() {
+  const detailsContainer = document.getElementById('details-container');
   const newRow = createDetailRow();
-  container.appendChild(newRow);
+  detailsContainer.appendChild(newRow);
 }
 
-function addDetail() {
-  const container = document.getElementById('details-container');
-  const newRow = createDetailRow();
-  container.appendChild(newRow);
-}
 
 function createDetailRow() {
   const newRow = document.createElement('div');
   newRow.classList.add('detail-row');
 
-  const nameField = document.createElement('textarea');
-  nameField.name = 'details-name';
-  nameField.placeholder = 'Detail Name';
-  nameField.classList.add('detail-textarea');
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.name = 'details-name';
+  nameInput.placeholder = 'Detail Name';
+  nameInput.classList.add('detail-input');
 
-  const valueField = document.createElement('textarea');
-  valueField.name = 'details-value';
-  valueField.placeholder = 'Detail Value';
-  valueField.classList.add('detail-textarea');
+  const valueInput = document.createElement('input');
+  valueInput.type = 'text';
+  valueInput.name = 'details-value';
+  valueInput.placeholder = 'Detail Value';
+  valueInput.classList.add('detail-input');
 
   const deleteButton = document.createElement('button');
   deleteButton.type = 'button';
@@ -281,12 +329,13 @@ function createDetailRow() {
   deleteButton.classList.add('delete-detail-button');
   deleteButton.onclick = () => newRow.remove();
 
-  newRow.appendChild(nameField);
-  newRow.appendChild(valueField);
+  newRow.appendChild(nameInput);
+  newRow.appendChild(valueInput);
   newRow.appendChild(deleteButton);
 
   return newRow;
 }
+
 
 function returnToPage() {
   returnToSourcePage();
@@ -295,9 +344,16 @@ function returnToPage() {
 function showError(message) {
   const errorCard = document.getElementById('errorCard');
   const errorMessage = document.getElementById('errorMessage');
-  errorMessage.textContent = message;
-  errorCard.style.display = 'flex';
+
+  if (!errorCard || !errorMessage) {
+    console.error('Os elementos errorCard ou errorMessage não foram encontrados no DOM.');
+    return; // Evita falhas se os elementos não existirem
+  }
+
+  errorMessage.textContent = message; // Define a mensagem de erro
+  errorCard.style.display = 'flex'; // Torna o cartão de erro visível
 }
+
 
 function clearErrors() {
   const errorElements = document.querySelectorAll('.error-message');

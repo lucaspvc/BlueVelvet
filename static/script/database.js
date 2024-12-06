@@ -7,29 +7,33 @@ const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 // Atualiza mensagem de boas-vindas
 document.getElementById("welcomeMessage").textContent = `Welcome, ${currentUser.name} (${currentUser.role})`;
 
-const url = 'http://localhost:8080/produtos';
+let currentPage = 0; // Página inicial
+let sortCriteria = 'productName'; // Critério de ordenação padrão
+const pageSize = 10; // Tamanho padrão da página
+
+const url = 'http://localhost:8080/produtos/search?name=';
+
+// Atualiza a URL para buscar os produtos com paginação e ordenação
+function getFetchUrl() {
+    return `http://localhost:8080/produtos/search?name=&sort=${sortCriteria}&size=${pageSize}&page=${currentPage}`;
+}
 
 function renderProducts() {
-    // Função para buscar os dados
-    fetch(url)
+    const fetchUrl = getFetchUrl();
+
+    fetch(fetchUrl)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('Erro na resposta da API');
             }
-            return response.json(); // Converte a resposta para JSON
+            return response.json();
         })
         .then(data => {
-            console.log(data); // Verifique o que está sendo retornado
-
-            // Acesse o array de produtos dentro de 'content'
-            const products = data.content; // Ajuste conforme necessário
+            const products = data.content;
+            const tableBody = document.getElementById('productTableBody');
+            tableBody.innerHTML = ""; // Limpa a tabela
 
             if (Array.isArray(products)) {
-                const tableBody = document.getElementById('productTableBody');
-
-                // Limpa a tabela antes de renderizar os produtos
-                tableBody.innerHTML = "";
-
                 products.forEach(product => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
@@ -53,12 +57,18 @@ function renderProducts() {
         })
         .catch(error => console.error('Houve um problema com a requisição Fetch:', error));
 }
+// Eventos de paginação
+document.getElementById("nextPage").addEventListener("click", () => {
+    currentPage++;
+    renderProducts();
+});
 
-
-
-function filterActivatedProducts(products) {
-    return products.filter(product => product.enabled === true);
-}
+document.getElementById("prevPage").addEventListener("click", () => {
+    if (currentPage > 0) {
+        currentPage--;
+        renderProducts();
+    }
+});
 
 document.getElementById('productTableBody').addEventListener('click', (e) => {
     if (e.target.classList.contains('view-btn')) {
@@ -74,53 +84,54 @@ document.getElementById('productTableBody').addEventListener('click', (e) => {
 });
 
 
-document.getElementById("nextPage").addEventListener("click", () => {
-    if (currentPage * productsPerPage < products.length) {
-        currentPage++;
-        renderProducts();
+document.getElementById("searchInputbtn").addEventListener("click", () => {
+    const searchField = document.getElementById("searchInput"); // Campo de entrada de texto
+    const query = searchField.value.trim(); // Captura o valor do campo de busca, removendo espaços extras
+
+    if (!query) {
+        renderProducts(); // Se o campo estiver vazio, carrega os produtos padrão
+        return;
     }
-});
 
-document.getElementById("prevPage").addEventListener("click", () => {
-    if (currentPage > 1) {
-        currentPage--;
-        renderProducts();
-    }
-});
+    const search = `${url}${encodeURIComponent(query)}`; // Monta a URL com o valor digitado
 
-document.getElementById("sortOptions").removeEventListener("change", sortProducts);
-document.getElementById("sortOptions").addEventListener("change", sortProducts);
+    fetch(search)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro na resposta da API');
+            }
+            return response.json(); // Converte a resposta para JSON
+        })
+        .then(data => {
+            const products = data.content; // Ajusta para a estrutura da resposta da API
+            const tableBody = document.getElementById('productTableBody');
 
-products = JSON.parse(localStorage.getItem("products")); // Recarrega os dados
-products.sort((a, b) => a.name.localeCompare(b.name));
+            // Limpa a tabela antes de renderizar os novos produtos
+            tableBody.innerHTML = "";
 
-function sortProducts(event) {
-    const sortBy = event.target.value;
-
-    products.sort((a, b) => {
-        const valueA = a[sortBy] || ""; // Valor padrão vazio
-        const valueB = b[sortBy] || "";
-
-        if (sortBy === "id") {
-            return Number(valueA) - Number(valueB);
-        } else {
-            return String(valueA).localeCompare(String(valueB));
-        }
-    });
-}
-
-document.getElementById("searchInput").addEventListener("input", (event) => {
-    const query = event.target.value.toLowerCase();
-    const filteredProducts = JSON.parse(localStorage.getItem("products")).filter(product => {
-        return (
-            product.name.toLowerCase().includes(query) ||
-            product.shortDescription.toLowerCase().includes(query) ||
-            product.fullDescription.toLowerCase().includes(query) ||
-            product.brand.toLowerCase().includes(query) ||
-            product.category.toLowerCase().includes(query)
-        );
-    });
-    currentPage = 1;
+            if (Array.isArray(products)) {
+                products.forEach(product => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${product.idProduct}</td>
+                        <td><img src="${product.mainImage}" alt="${product.name}" width="50"></td>
+                        <td>${product.productName}</td>
+                        <td>${product.brand}</td>
+                        <td>${product.category}</td>
+                        <td class="actions-col">
+                            <button class="view-btn" data-id="${product.idProduct}">View</button>
+                            <button class="edit-btn" data-id="${product.idProduct}">Edit</button>
+                            <button class="delete-btn" data-id="${product.idProduct}">Delete</button>
+                        </td>
+                        <td>${product.enabled}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                console.error('A resposta da API não contém um array de produtos:', products);
+            }
+        })
+        .catch(error => console.error('Houve um problema com a requisição Fetch:', error));
 });
 
 
@@ -147,9 +158,20 @@ function viewProduct(idProduct) {
                 <strong>Cost:</strong> ${product.cost}<br>
                 <strong>Discount:</strong> ${product.discount}<br>
                 <strong>In Stock:</strong> ${product.inStock}<br>
-                <strong>Dimensions:</strong> ${product.dimensions}<br>
-                <strong>Weight:</strong> ${product.weight}<br>
-                <strong>Details:</strong> ${product.details}<br>
+
+                <strong> Dimensions:</strong>
+                <ul>
+                    <li>Length: ${product.dimensions.length || "N/A"}</li>
+                    <li>Width: ${product.dimensions.width || "N/A"}</li>
+                    <li>Height: ${product.dimensions.height || "N/A"}</li>
+                    <li>Weight: ${product.dimensions.weight || "N/A"}</li>
+                    <li>Unit:${product.dimensions.unit || "N/A"}</li>
+                    <li>Unit Weight: ${product.dimensions.unitWeight || "N/A"}</li>
+                </ul>
+
+                <strong> Details (name:value):</strong>
+                ${product.details.map(detail => `<li>${detail.name}: ${detail.value}</li>`).join('')}
+
                 <strong>Created At:</strong> ${product.createdAt}<br>
                 <strong>Updated At:</strong> ${product.updatedAt}<br>
                 <div class="action-buttons">
@@ -157,6 +179,7 @@ function viewProduct(idProduct) {
                     <button id="delete-btn">Delete</button>
                 </div>
             `;
+
             document.getElementById('productDetails').innerHTML = productDetails;
 
             // Exibe o modal
@@ -171,32 +194,42 @@ function viewProduct(idProduct) {
 
             // Função para gerar as imagens dinamicamente no slider
             async function generateSliderImages(product) {
-                const images = [product.mainImage, ...(Array.isArray(product.featuredImages) ? product.featuredImages : [])];
+                // Verificar se a imagem principal está presente
+                if (product.mainImage) {
+                    const mainImageElement = document.getElementById('main-image');
+                    const mainImagePreview = document.createElement('img');
+                    mainImagePreview.src = product.mainImage;
+                    mainImagePreview.alt = 'Main Image Preview';
+                    mainImagePreview.style.width = '100%';
+                    mainImagePreview.style.height = '100%';
 
-                if (images.length <= 1) {
-                    prevBtn.style.display = "none";
-                    nextBtn.style.display = "none";
-                } else {
-                    prevBtn.style.display = "inline-block";
-                    nextBtn.style.display = "inline-block";
-                }
-
-                // Cria uma div para cada imagem
-                images.forEach(async (src, index) => {
                     const imageDiv = document.createElement('div');
-                    imageDiv.classList.add('slider-image');
-                    if (index === 0) imageDiv.classList.add('active'); // A primeira imagem será visível inicialmente
+                    imageDiv.classList.add('slider-image', 'active'); // A primeira imagem é visível inicialmente
+                    imageDiv.appendChild(mainImagePreview);
 
-                    const img = document.createElement('img');
-                    img.src = src;
-                    img.alt = `Image ${index + 1}`;
-                    img.style.width = "100%";
-                    img.style.height = "100%";
-
-                    imageDiv.appendChild(img);
                     imageSlider.appendChild(imageDiv);
-                });
+                } // Verificar se há imagens adicionais e adicioná-las
+                if (product.featuredImages?.length) {
+                    product.featuredImages.forEach((featuredImages, index) => {
+                        const imageDiv = document.createElement('div');
+                        imageDiv.classList.add('slider-image');
+                        if (index === 0 && !document.querySelector('.slider-image.active')) {
+                            imageDiv.classList.add('active'); // A primeira imagem (principal) já deve ter a classe 'active'
+                        }
+                
+                        const img = document.createElement('img');
+                        img.src = featuredImages.images; // Ajuste aqui: acessar diretamente a URL da imagem
+                        img.alt = `Image ${index + 1}`;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                
+                        imageDiv.appendChild(img);
+                        imageSlider.appendChild(imageDiv);
+                    });
+                }
+                
             }
+
 
 
             // Função para atualizar o slider e alternar as imagens
@@ -253,12 +286,9 @@ function viewProduct(idProduct) {
         .catch(error => console.error('Erro ao buscar detalhes do produto:', error));
 }
 
-
-
 function editProduct(idProduct) {
     window.location.href = `/template/edit-product.html?id=${idProduct}&source=database`;
 }
-
 
 async function deleteProduct(idProduct) {
     // Restringir acesso apenas para administradores
@@ -303,7 +333,13 @@ async function deleteProduct(idProduct) {
     };
 }
 
-
+// Evento para alterar o critério de ordenação
+document.getElementById("sortOptionsbtn").addEventListener("click", () => {
+    const selectedOption = document.getElementById("sortOptions").value;
+    sortCriteria = selectedOption; // Atualiza o critério de ordenação
+    currentPage = 0; // Reinicia para a primeira página
+    renderProducts(); // Recarrega os produtos
+});
 
 document.getElementById("addProduct").addEventListener("click", () => {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -315,22 +351,9 @@ document.getElementById("addProduct").addEventListener("click", () => {
     }
 });
 
-
 document.getElementById("logoutButton").addEventListener("click", () => {
     localStorage.removeItem("currentUser");
     window.location.href = "/template/login.html";
-});
-
-
-document.getElementById("resetProducts").addEventListener("click", () => {
-    if (confirm("Reset products to initial state?")) {
-        const resetProducts = JSON.parse(localStorage.getItem('resetProducts'));
-        localStorage.setItem('products', JSON.stringify(resetProducts));
-        products = resetProducts;
-        currentPage = 1;
-        products.sort((a, b) => a.name.localeCompare(b.name));
-        renderProducts();
-    }
 });
 
 function showError(message) {
@@ -351,5 +374,129 @@ function checkClickOutside(event) {
         closeErrorCard();
     }
 }
+
+// Chama renderProducts com a ordenação por nome ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+    const sortByNameUrl = `${url}&sort=productName`;  // URL com o critério de ordenação por nome
+    fetch(sortByNameUrl) // Chama a API com a ordenação por nome
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao buscar produtos');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const products = data.content;
+            const tableBody = document.getElementById('productTableBody');
+            tableBody.innerHTML = ""; // Limpa a tabela
+
+            if (Array.isArray(products)) {
+                products.forEach(product => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${product.idProduct}</td>
+                        <td><img src="${product.mainImage}" alt="${product.name}" width="50"></td>
+                        <td>${product.productName}</td>
+                        <td>${product.brand}</td>
+                        <td>${product.category}</td>
+                        <td class="actions-col">
+                            <button class="view-btn" data-id="${product.idProduct}">View</button>
+                            <button class="edit-btn" data-id="${product.idProduct}">Edit</button>
+                            <button class="delete-btn" data-id="${product.idProduct}">Delete</button>
+                        </td>
+                        <td>${product.enabled}</td>
+                    `;
+                    tableBody.appendChild(row); // Insere a nova linha na tabela
+                });
+            } else {
+                console.error('A resposta da API não contém um array de produtos:', products);
+            }
+        })
+        .catch(error => console.error('Erro ao buscar produtos:', error));
+});
+
+document.getElementById("resetProducts").addEventListener("click", async () => {
+    if (confirm("Deseja realmente resetar os produtos para o estado inicial?")) {
+        try {
+            // Apaga todos os produtos existentes
+            const response = await fetch('http://localhost:8080/produtos', {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erro ao limpar o banco de dados: ${response.status}`);
+            }
+
+            console.log('Banco de dados limpo com sucesso.');
+
+            // Adiciona novos produtos de exemplo
+            for (let i = 1; i <= 10; i++) {
+                const data = {
+                    "productName": `Exemplo de Produto ${i}`,
+                    "shortDescription": "Descrição curta do produto.",
+                    "fullDescription": "Descrição completa do produto, incluindo detalhes importantes.",
+                    "brand": "Marca Exemplo",
+                    "category": "Categoria Exemplo",
+                    "mainImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHCAYAAAAvZezQAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYSURBVBhXY+Tn5//PgASYoDQc0ECAgQEAitYBOhOAU/4AAAAASUVORK5CYII=",
+                    "featuredImages": [
+                        {
+                            "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHCAYAAAAvZezQAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYSURBVBhXY+Tn5//PgASYoDQc0ECAgQEAitYBOhOAU/4AAAAASUVORK5CYII="
+                        },
+                        {
+                            "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHCAYAAAAvZezQAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYSURBVBhXY+Tn5//PgASYoDQc0ECAgQEAitYBOhOAU/4AAAAASUVORK5CYII="
+                        }
+                    ],
+                    "price": 199.99,
+                    "discount": 19.99,
+                    "enabled": true,
+                    "inStock": true,
+                    "dimensions": {
+                        "length": 30.0,
+                        "width": 10.0,
+                        "height": 20.0,
+                        "weight": 1.5,
+                        "unit": "cm",
+                        "unitWeight": "kg"
+                    },
+                    "details": [
+                        {
+                            "name": "Cor",
+                            "value": "Vermelho"
+                        },
+                        {
+                            "name": "Tamanho",
+                            "value": "M"
+                        }
+                    ]
+                };
+
+                try {
+                    const productResponse = await fetch('http://localhost:8080/produtos', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!productResponse.ok) {
+                        throw new Error(`Erro ao adicionar produto ${i}: ${productResponse.status}`);
+                    }
+
+                    const result = await productResponse.json();
+                    console.log(`Produto ${i} adicionado com sucesso:`, result);
+                } catch (error) {
+                    console.error(`Erro ao adicionar o produto ${i}:`, error);
+                }
+            }
+
+            alert("Banco de dados resetado com sucesso.");
+            renderProducts(); // Atualiza a tabela de produtos na interface
+        } catch (error) {
+            console.error('Erro ao resetar os produtos:', error);
+            alert('Falha ao resetar os produtos.');
+        }
+    }
+});
 
 renderProducts();

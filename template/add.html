@@ -103,6 +103,17 @@
       <button type="button" id="add-btn" onclick="addProduct()">Add Product</button>
     </div>
   </form>
+  <div class="error-card" id="errorCard" onclick="checkClickOutside(event)" style="display: none;">
+    <div class="cardError">
+        <div class="cardError-content">
+            <h1 class="cardError-heading">Error</h1>
+            <p class="cardError-description" id="errorMessage">Default error message.</p>
+        </div>
+        <div class="cardErro-button-wrapper">
+            <button class="cardError-button primary" onclick="closeErrorCard()">OK</button>
+        </div>
+    </div>
+</div>
 
   <script src="/static/script/add.js"></script>
 </body>
