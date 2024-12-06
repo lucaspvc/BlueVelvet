@@ -1,135 +1,63 @@
 // Obtém os dados do banco de dados (usuários)
 const users = JSON.parse(localStorage.getItem('users'));
 
-// Obtém os dados do banco de dados (produtos)
-let products = JSON.parse(localStorage.getItem('products'));
-const initialProducts = JSON.parse(localStorage.getItem('products'));
-
-// Carrega produtos do localStorage ou inicializa com a lista padrão
-if (!localStorage.getItem("products")) {
-    localStorage.setItem("products", JSON.stringify(initialProducts));
-}
-
 // Verifica autenticação
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
 // Atualiza mensagem de boas-vindas
 document.getElementById("welcomeMessage").textContent = `Welcome, ${currentUser.name} (${currentUser.role})`;
 
-let currentPage = 1;
-const productsPerPage = 10;
+const url = 'http://localhost:8080/produtos';
 
-// Função para calcular os produtos da página atual
-function getProductsForCurrentPage() {
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const endIndex = currentPage * productsPerPage;
-    return products.slice(startIndex, endIndex);
-}
-
-function renderPagination(totalPages) {
-    const paginationContainer = document.querySelector(".pagination");
-    paginationContainer.innerHTML = ""; // Limpa apenas a parte de paginação
-
-    // Botão "Anterior"
-    const prevButton = document.createElement("button");
-    prevButton.id = "prevPage";
-    prevButton.className = "pagination-button";
-    prevButton.textContent = "<";
-    prevButton.disabled = currentPage === 1;
-    prevButton.addEventListener("click", () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderProducts();
-            renderPagination(totalPages);
-        }
-    });
-    paginationContainer.appendChild(prevButton);
-
-    // Números das páginas com ocultação dinâmica
-    for (let i = 1; i <= totalPages; i++) {
-        if (
-            i === 1 || // Sempre mostrar a primeira página
-            i === totalPages || // Sempre mostrar a última página
-            i === currentPage || // Mostrar a página atual
-            i === currentPage - 1 || // Mostrar a anterior da atual
-            i === currentPage + 1 // Mostrar a próxima da atual
-        ) {
-            const pageNumber = document.createElement("span");
-            pageNumber.textContent = i;
-            pageNumber.className = "page-number" + (i === currentPage ? " active" : "");
-            if (i !== currentPage) {
-                pageNumber.addEventListener("click", () => {
-                    currentPage = i;
-                    renderProducts();
-                    renderPagination(totalPages);
-                });
+function renderProducts() {
+    // Função para buscar os dados
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-            paginationContainer.appendChild(pageNumber);
-        } else if (
-            i === currentPage - 2 || // Exibir "..." antes das páginas intermediárias
-            i === currentPage + 2
-        ) {
-            const dots = document.createElement("span");
-            dots.textContent = "...";
-            dots.className = "dots";
-            paginationContainer.appendChild(dots);
-        }
-    }
+            return response.json(); // Converte a resposta para JSON
+        })
+        .then(data => {
+            console.log(data); // Verifique o que está sendo retornado
 
-    // Botão "Próximo"
-    const nextButton = document.createElement("button");
-    nextButton.id = "nextPage";
-    nextButton.className = "pagination-button";
-    nextButton.textContent = ">";
-    nextButton.disabled = currentPage === totalPages;
-    nextButton.addEventListener("click", () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderProducts();
-            renderPagination(totalPages);
-        }
-    });
-    paginationContainer.appendChild(nextButton);
+            // Acesse o array de produtos dentro de 'content'
+            const products = data.content; // Ajuste conforme necessário
+
+            if (Array.isArray(products)) {
+                const tableBody = document.getElementById('productTableBody');
+
+                // Limpa a tabela antes de renderizar os produtos
+                tableBody.innerHTML = "";
+
+                products.forEach(product => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${product.idProduct}</td>
+                        <td><img src="${product.mainImage}" alt="${product.name}" width="50"></td>
+                        <td>${product.productName}</td>
+                        <td>${product.brand}</td>
+                        <td>${product.category}</td>
+                        <td class="actions-col">
+                            <button class="view-btn" data-id="${product.idProduct}">View</button>
+                            <button class="edit-btn" data-id="${product.idProduct}">Edit</button>
+                            <button class="delete-btn" data-id="${product.idProduct}">Delete</button>
+                        </td>
+                        <td>${product.enabled}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                console.error('A resposta da API não contém um array de produtos:', products);
+            }
+        })
+        .catch(error => console.error('Houve um problema com a requisição Fetch:', error));
 }
+
+
 
 function filterActivatedProducts(products) {
-    return products.filter(product => product.activated === true);
-}
-
-function renderProducts(filteredProducts = products) {
-    // Aplica o filtro opcionalmente
-    const productsToRender = filteredProducts;
-
-    const tableBody = document.getElementById("productTableBody");
-    tableBody.innerHTML = "";
-
-    // Paginação
-    const start = (currentPage - 1) * productsPerPage;
-    const end = start + productsPerPage;
-    const paginatedProducts = productsToRender.slice(start, end);
-
-    // Renderiza produtos paginados
-    paginatedProducts.forEach(product => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${product.id}</td>
-            <td><img src="${product.mainImage}" alt="${product.name}" width="50"></td>
-            <td>${product.name}</td>
-            <td>${product.brand}</td>
-            <td>${product.category}</td>
-            <td class="actions-col">
-                <button class="view-btn" data-id="${product.id}">View</button>
-                <button class="edit-btn" data-id="${product.id}">Edit</button>
-                <button class="delete-btn" data-id="${product.id}">Delete</button>
-            </td>
-            <td>${product.activated}</td>
-        `;
-        tableBody.appendChild(row);
-    });
-
-    // Total de páginas baseado nos produtos ativados
-    const totalPages = Math.ceil(productsToRender.length / productsPerPage);
-    renderPagination(totalPages); // Renderiza a navegação de páginas
+    return products.filter(product => product.enabled === true);
 }
 
 document.getElementById('productTableBody').addEventListener('click', (e) => {
@@ -145,9 +73,6 @@ document.getElementById('productTableBody').addEventListener('click', (e) => {
     }
 });
 
-// Inicialização
-products.sort((a, b) => a.name.localeCompare(b.name));
-renderProducts();
 
 document.getElementById("nextPage").addEventListener("click", () => {
     if (currentPage * productsPerPage < products.length) {
@@ -168,8 +93,6 @@ document.getElementById("sortOptions").addEventListener("change", sortProducts);
 
 products = JSON.parse(localStorage.getItem("products")); // Recarrega os dados
 products.sort((a, b) => a.name.localeCompare(b.name));
-renderProducts();
-
 
 function sortProducts(event) {
     const sortBy = event.target.value;
@@ -184,8 +107,6 @@ function sortProducts(event) {
             return String(valueA).localeCompare(String(valueB));
         }
     });
-
-    renderProducts();
 }
 
 document.getElementById("searchInput").addEventListener("input", (event) => {
@@ -200,148 +121,150 @@ document.getElementById("searchInput").addEventListener("input", (event) => {
         );
     });
     currentPage = 1;
-    renderProducts(filteredProducts); 
 });
 
 
-
-function viewProduct(id) {
+function viewProduct(idProduct) {
     // Restringir acesso apenas para administradores
     if (currentUser.role !== 'admin') {
         showError("Access denied! Only administrators can view product details.");
         return; // Impede a execução da função
     }
+    fetch(`http://localhost:8080/produtos/${idProduct}`)
+        .then(response => response.json())
+        .then(product => {
+            const tableBody = document.getElementById('productTableBody');
 
-    const product = products.find(product => product.id === id); 
-    if (product) {
-        // Preencher os detalhes do produto
-        const productDetails = `
-            <strong>ID:</strong> ${product.id}<br>
-            <strong>Name:</strong> ${product.name}<br>
-            <strong>Brand:</strong> ${product.brand}<br>
-            <strong>Category:</strong> ${product.category}<br>
-            <strong>Short Description:</strong> ${product.shortDescription || "No description available."}<br>
-            <strong>Full Description:</strong> ${product.fullDescription}<br>
-            <strong>Price:</strong> ${product.price}<br>
-            <strong>Cost:</strong> ${product.cost}<br>
-            <strong>Discount:</strong> ${product.discount}<br>
-            <strong>In Stock:</strong> ${product.inStock}<br>
-            <strong>Dimensions:</strong> ${product.dimensions}<br>
-            <strong>Weight:</strong> ${product.weight}<br>
-            <strong>Details:</strong> ${product.details}<br>
-            <strong>Created At:</strong> ${product.createdAt}<br>
-            <strong>Updated At:</strong> ${product.updatedAt}<br>
-            <div class="action-buttons">
-                <button id="edit-btn">Edit</button>
-                <button id="delete-btn">Delete</button>
-            </div>
-        `;
-        document.getElementById('productDetails').innerHTML = productDetails;
+            // Preenche o conteúdo do modal com os detalhes do produto
+            const productDetails = `
+                <strong>ID:</strong> ${product.idProduct}<br>
+                <strong>Name:</strong> ${product.productName}<br>
+                <strong>Brand:</strong> ${product.brand}<br>
+                <strong>Category:</strong> ${product.category}<br>
+                <strong>Short Description:</strong> ${product.shortDescription || "No description available."}<br>
+                <strong>Full Description:</strong> ${product.fullDescription}<br>
+                <strong>Price:</strong> ${product.price}<br>
+                <strong>Cost:</strong> ${product.cost}<br>
+                <strong>Discount:</strong> ${product.discount}<br>
+                <strong>In Stock:</strong> ${product.inStock}<br>
+                <strong>Dimensions:</strong> ${product.dimensions}<br>
+                <strong>Weight:</strong> ${product.weight}<br>
+                <strong>Details:</strong> ${product.details}<br>
+                <strong>Created At:</strong> ${product.createdAt}<br>
+                <strong>Updated At:</strong> ${product.updatedAt}<br>
+                <div class="action-buttons">
+                    <button id="edit-btn">Edit</button>
+                    <button id="delete-btn">Delete</button>
+                </div>
+            `;
+            document.getElementById('productDetails').innerHTML = productDetails;
 
-        // Configurar o slider de imagens
-        const imageSlider = document.getElementById('imageSlider');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        imageSlider.innerHTML = ""; // Limpar o slider
+            // Exibe o modal
+            document.getElementById('productModal').style.display = 'block';
+            // Configurar o slider de imagens
+            const imageSlider = document.getElementById('imageSlider');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            imageSlider.innerHTML = ""; // Limpar o slider
 
-        let currentIndex = 0;
+            let currentIndex = 0;
 
-        // Função para gerar as imagens dinamicamente no slider
-        async function generateSliderImages(product) {
-            const images = [product.mainImage, ...(Array.isArray(product.extraImages) ? product.extraImages : [])];
+            // Função para gerar as imagens dinamicamente no slider
+            async function generateSliderImages(product) {
+                const images = [product.mainImage, ...(Array.isArray(product.featuredImages) ? product.featuredImages : [])];
 
-            if (images.length <= 1) {
-                prevBtn.style.display = "none";
-                nextBtn.style.display = "none";
-            } else {
-                prevBtn.style.display = "inline-block";
-                nextBtn.style.display = "inline-block";
+                if (images.length <= 1) {
+                    prevBtn.style.display = "none";
+                    nextBtn.style.display = "none";
+                } else {
+                    prevBtn.style.display = "inline-block";
+                    nextBtn.style.display = "inline-block";
+                }
+
+                // Cria uma div para cada imagem
+                images.forEach(async (src, index) => {
+                    const imageDiv = document.createElement('div');
+                    imageDiv.classList.add('slider-image');
+                    if (index === 0) imageDiv.classList.add('active'); // A primeira imagem será visível inicialmente
+
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = `Image ${index + 1}`;
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+
+                    imageDiv.appendChild(img);
+                    imageSlider.appendChild(imageDiv);
+                });
             }
-            
-            // Cria uma div para cada imagem
-            images.forEach(async (src, index) => {
-                const imageDiv = document.createElement('div');
-                imageDiv.classList.add('slider-image');
-                if (index === 0) imageDiv.classList.add('active'); // A primeira imagem será visível inicialmente
 
-                const img = document.createElement('img');
-                img.src = src;
-                img.alt = `Image ${index + 1}`;
-                img.style.width = "100%";
-                img.style.height = "100%";
 
-                imageDiv.appendChild(img);
-                imageSlider.appendChild(imageDiv);
+            // Função para atualizar o slider e alternar as imagens
+            async function updateSlider(index) {
+                const images = document.querySelectorAll('.slider-image');
+                images.forEach((image, i) => {
+                    image.classList.remove('active');
+                });
+                images[index].classList.add('active');
+            }
+
+            // Evento para o botão "Next"
+            nextBtn.addEventListener('click', () => {
+                const totalImages = product.featuredImages.length + 1; // Total de imagens (main + extras)
+                currentIndex = (currentIndex + 1) % totalImages; // Avança para a próxima imagem
+                updateSlider(currentIndex);
             });
-        }
 
-
-        // Função para atualizar o slider e alternar as imagens
-        async function updateSlider(index) {
-            const images = document.querySelectorAll('.slider-image');
-            images.forEach((image, i) => {
-                image.classList.remove('active');
+            // Evento para o botão "Prev"
+            prevBtn.addEventListener('click', () => {
+                const totalImages = product.featuredImages.length + 1; // Total de imagens (main + extras)
+                currentIndex = (currentIndex - 1 + totalImages) % totalImages; // Volta para a imagem anterior
+                updateSlider(currentIndex);
             });
-            images[index].classList.add('active');
-        }
 
-        // Evento para o botão "Next"
-        nextBtn.addEventListener('click', () => {
-            const totalImages = product.extraImages.length + 1; // Total de imagens (main + extras)
-            currentIndex = (currentIndex + 1) % totalImages; // Avança para a próxima imagem
-            updateSlider(currentIndex);
-        });
+            // Inicializa o slider com as imagens do produto
+            generateSliderImages(product);
 
-        // Evento para o botão "Prev"
-        prevBtn.addEventListener('click', () => {
-            const totalImages = product.extraImages.length + 1; // Total de imagens (main + extras)
-            currentIndex = (currentIndex - 1 + totalImages) % totalImages; // Volta para a imagem anterior
-            updateSlider(currentIndex);
-        });
+            // Mostrar o modal
+            const modal = document.getElementById('productModal');
+            modal.style.display = "block";
 
-        // Inicializa o slider com as imagens do produto
-        generateSliderImages(product);
-
-        // Mostrar o modal
-        const modal = document.getElementById('productModal');
-        modal.style.display = "block";
-
-        // Fechar o modal
-        document.querySelector('.close').onclick = () => {
-            modal.style.display = "none";
-        };
-
-        document.getElementById('edit-btn').addEventListener('click', () => {
-            editProduct(product.id);
-        });
-        document.getElementById('delete-btn').addEventListener('click', () => {
-            deleteProduct(product.id);
-            modal.style.display = "none";
-        });
-
-        // Fechar ao clicar fora do modal
-        window.onclick = (event) => {
-            if (event.target === modal) {
+            // Fechar o modal
+            document.querySelector('.close').onclick = () => {
                 modal.style.display = "none";
-            }
-        };
-    } else {
-        showError("Product not found!");
-    }
+            };
+
+            document.getElementById('edit-btn').addEventListener('click', () => {
+                editProduct(product.idProduct);
+            });
+            document.getElementById('delete-btn').addEventListener('click', () => {
+                deleteProduct(product.idProduct);
+                modal.style.display = "none";
+            });
+
+            // Fechar ao clicar fora do modal
+            window.onclick = (event) => {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                    renderProducts();
+                }
+            };
+        })
+        .catch(error => console.error('Erro ao buscar detalhes do produto:', error));
 }
 
 
 
-function editProduct(id) {
-    window.location.href = `/BlueVelvet/template/edit-product.html?id=${id}&source=database`;
+function editProduct(idProduct) {
+    window.location.href = `/template/edit-product.html?id=${idProduct}&source=database`;
 }
 
 
-function deleteProduct(id) {
+async function deleteProduct(idProduct) {
     // Restringir acesso apenas para administradores
     if (currentUser.role !== 'admin' && currentUser.role !== 'editor') {
         showError("Access denied! Only administrators or editors can delete product.");
-        return; // Impede a execução da função
+        return;
     }
 
     const popup = document.querySelector(".card");
@@ -350,12 +273,8 @@ function deleteProduct(id) {
     const deleteButton = document.querySelector("[name='delete-btn']");
     const exitButton = document.querySelector("[name='exit-btn']");
 
-
-    // Exibe o pop-up
     popup.classList.add("active");
 
-
-    // Evento para cancelar
     cancelButton.onclick = () => {
         popup.classList.remove("active");
         overlay.classList.remove("active");
@@ -366,32 +285,40 @@ function deleteProduct(id) {
         overlay.classList.remove("active");
     };
 
-    // Evento para confirmar exclusão
-    deleteButton.onclick = () => {
-        products = products.filter(product => product.id !== id);
-        localStorage.setItem("products", JSON.stringify(products));
-        renderProducts(); 
+    deleteButton.onclick = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/produtos/${idProduct}`, {
+                method: "DELETE",
+            });
+            if (!response.ok) throw new Error("Failed to delete product");
 
-        popup.classList.remove("active");
-        overlay.classList.remove("active");
+            popup.classList.remove("active");
+            overlay.classList.remove("active");
+
+            // Atualiza a tabela sem duplicar
+            renderProducts();
+        } catch (error) {
+            showError(`Error deleting product: ${error.message}`);
+        }
     };
 }
+
 
 
 document.getElementById("addProduct").addEventListener("click", () => {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
     if (currentUser.role === "admin" || currentUser.role === "editor") {
-        window.location.href = `/BlueVelvet/template/add.html?source=database`;
+        window.location.href = `/template/add.html?source=database`;
     } else {
         showError("Only users with the Administrator or Editor role can access this page.");
     }
 });
 
 
-document.getElementById("logoutButton").addEventListener("click", () =>{
+document.getElementById("logoutButton").addEventListener("click", () => {
     localStorage.removeItem("currentUser");
-    window.location.href = "/BlueVelvet/template/login.html";
+    window.location.href = "/template/login.html";
 });
 
 
@@ -411,18 +338,18 @@ function showError(message) {
     const errorMessage = document.getElementById('errorMessage');
     errorMessage.textContent = message;
     errorCard.style.display = 'flex';
-  }
-  
-  function closeErrorCard() {
+}
+
+function closeErrorCard() {
     const errorCard = document.getElementById('errorCard');
     errorCard.style.display = 'none';
-  }
+}
 
-  function checkClickOutside(event) {
+function checkClickOutside(event) {
     const card = document.querySelector('.error-card .cardError');
     if (!card.contains(event.target)) {
-      closeErrorCard();
+        closeErrorCard();
     }
-  }
-  
-  
+}
+
+renderProducts();

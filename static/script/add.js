@@ -6,9 +6,9 @@ function getSourcePage() {
 function returnToSourcePage() {
   const sourcePage = getSourcePage();
   if (sourcePage === 'database') {
-    window.location.href = "/BlueVelvet/template/database.html";
+    window.location.href = "/template/database.html";
   } else {
-    window.location.href = "/BlueVelvet/template/dashboard.html";
+    window.location.href = "/template/dashboard.html";
   }
 }
 
@@ -16,74 +16,35 @@ async function addProduct() {
   const form = document.getElementById('add-product-form');
   const formData = new FormData(form);
 
-  // Recuperar os produtos existentes do localStorage
-  const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
-
-  // Calcular o próximo ID
-  const lastId = existingProducts.length > 0 ? Math.max(...existingProducts.map(p => p.id)) : 0;
-  const newId = lastId + 1;
-
   let isValid = true;
 
   // Limpar mensagens de erro e remover a classe de erro
   clearErrors();
 
   const newProduct = {
-    id: newId,
-    name: formData.get('name')?.trim() || null,
+    productName: formData.get('productName')?.trim() || null,
     shortDescription: formData.get('shortDescription')?.trim() || null,
     fullDescription: formData.get('fullDescription')?.trim() || null,
     brand: formData.get('brand')?.trim() || null,
     category: formData.get('category')?.trim() || null,
     price: parseFloat(formData.get('price')) || null,
     discount: parseFloat(formData.get('discount')) || null,
-    activated: formData.get('activated') === 'true',
+    enabled: formData.get('enable') === 'true',
     inStock: formData.get('inStock') === 'true',
-    dimensions: formData.get('dimensions')?.trim() || null,
-    weight: parseFloat(formData.get('weight')) || null,
-    cost: parseFloat(formData.get('cost')) || null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    dimensions: {
+      length: parseFloat(formData.get('length')) || null,
+      width: parseFloat(formData.get('width')) || null,
+      height: parseFloat(formData.get('height')) || null,
+      weight: parseFloat(formData.get('weight')) || null,
+      unit: formData.get('unit') || null,
+      unitWeight: formData.get('unitWeight') || null,
+    },
+    details: [],
   };
-
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const mainImageFile = formData.get('mainImage');
-  if (mainImageFile instanceof File && mainImageFile.name) {
-    try {
-      newProduct.mainImage = await convertToBase64(mainImageFile);
-    } catch (error) {
-      console.error("Erro ao converter a imagem principal para base64", error);
-    }
-  }
-
-  const extraImagesFiles = formData.getAll('extraImages'); // Obter todos os arquivos do campo extraImages
-  newProduct.extraImages = [];
-
-  if (extraImagesFiles.length > 0) {
-    try {
-      for (const file of extraImagesFiles) {
-        if (file instanceof File && file.name) {
-          const base64Image = await convertToBase64(file);
-          newProduct.extraImages.push(base64Image);
-        }
-      }
-    } catch (error) {
-      console.error("Erro ao converter imagens extras para base64", error);
-    }
-  }
-
 
   // Validar campos obrigatórios
-  if (!newProduct.name) {
-    showError('name', 'O nome é obrigatório.');
+  if (!newProduct.productName) {
+    showError('productName', 'O nome é obrigatório.');
     isValid = false;
   }
   if (!newProduct.brand) {
@@ -94,43 +55,84 @@ async function addProduct() {
     showError('category', 'A categoria é obrigatória.');
     isValid = false;
   }
-  if (!newProduct.mainImage) {
-    // Atribui uma imagem padrão se o campo principal estiver vazio
-    newProduct.mainImage = '/BlueVelvet/static/images/logoPreto.png';
-  }
 
   if (!isValid) {
     return; // Não envia o formulário se houver erros
   }
 
-  // Verificar unicidade do nome
-  const isNameUnique = !existingProducts.some(product => {
-    return product.name && newProduct.name &&
-      product.name.trim().toLowerCase() === newProduct.name.trim().toLowerCase();
+  // Adicionar detalhes
+  const detailsContainer = document.getElementById('details-container');
+  const detailRows = detailsContainer.querySelectorAll('.detail-row');
+
+  detailRows.forEach((row) => {
+    const name = row.querySelector('[name="details-name"]').value.trim();
+    const value = row.querySelector('[name="details-value"]').value.trim();
+    if (name && value) {
+      newProduct.details.push({ name, value });
+    }
   });
 
-  if (!isNameUnique) {
-    alert('Já existe um produto com esse nome.');
-    showError('name', 'O nome do produto já existe. Por favor, escolha outro nome.');
-    return;
+  // Adicionar imagens principais e extras
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const mainImageFile = formData.get('mainImage');
+  if (mainImageFile instanceof File && mainImageFile.name) {
+    try {
+      newProduct.mainImage = await convertToBase64(mainImageFile);
+    } catch (error) {
+      console.error('Erro ao converter a imagem principal para base64', error);
+    }
   }
 
+  const featuredImages = formData.getAll('extraImages');
+  newProduct.featuredImages = [];
 
-  // Adicionar o novo produto
-  existingProducts.push(newProduct);
-  localStorage.setItem('products', JSON.stringify(existingProducts));
+  if (featuredImages.length > 0) {
+    try {
+      for (const file of featuredImages) {
+        if (file instanceof File && file.name) {
+          const base64Image = await convertToBase64(file);
+          newProduct.featuredImages.push({ image: base64Image });
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao converter imagens extras para base64', error);
+    }
+  }
 
-  console.log('Produto Adicionado:', newProduct);
-  alert('Produto adicionado com sucesso!');
-  form.reset();
+  // Enviar dados para o backend
+  try {
+    const response = await fetch('http://localhost:8080/produtos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newProduct),
+    });
 
-  // Limpar as linhas de detalhes e adicionar a primeira linha vazia novamente
-  const detailsContainer = document.getElementById('details-container');
-  detailsContainer.innerHTML = '';
-  addInitialDetailRow();
+    if (!response.ok) {
+      throw new Error(`Erro ao enviar os dados: ${response.status}`);
+    }
 
-  returnPage()
+    const result = await response.json();
+    console.log('Produto adicionado com sucesso:', result);
+    form.reset();
+    detailsContainer.innerHTML = '';
+    addInitialDetailRow();
+    returnPage();
+  } catch (error) {
+    console.error('Erro ao adicionar produto:', error);
+    alert('Erro ao adicionar produto. Confira o console para mais detalhes.');
+  }
 }
+
 
 
 function showError(fieldId, message) {
@@ -140,7 +142,6 @@ function showError(fieldId, message) {
   if (field && errorElement) {
     // Para campos de texto (input, textarea)
     if (!field.value.trim()) {
-      alert('showerroe');
       field.classList.add('error');
       errorElement.textContent = message;
       errorElement.style.display = 'block';

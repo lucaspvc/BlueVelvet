@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Product</title>
-  <link rel="stylesheet" href="/BlueVelvet/static/style/add-style.css">
+  <link rel="stylesheet" href="/static/style/add-style.css">
 </head>
 
 <body>
@@ -13,13 +13,13 @@
   <h2>Add Product</h2>
   <form id="add-product-form">
 
-    <input type="text" id="name" name="name" placeholder="Product Name" required>
-    <span class="error-message" id="name-error"></span>
+    <input type="text" id="productName" name="productName" placeholder="Product Name" required>
+    <span class="error-message" id="productName-error"></span>
 
-    <textarea id="short-description" name="shortDescription" placeholder="Short Description" required></textarea>
+    <textarea id="shortDescription" name="shortDescription" placeholder="Short Description" required></textarea>
     <span class="error-message" id="shortDescription-error"></span>
 
-    <textarea id="full-description" name="fullDescription" placeholder="Full Description" required></textarea>
+    <textarea id="fullDescription" name="fullDescription" placeholder="Full Description" required></textarea>
     <span class="error-message" id="fullDescription-error"></span>
 
     <input type="text" id="brand" name="brand" placeholder="Brand" required>
@@ -28,11 +28,11 @@
     <input type="text" id="category" name="category" placeholder="Category" required>
     <span class="error-message" id="category-error"></span>
 
-    <label for="main-image">Main Image</label>
-    <input type="file" id="main-image" name="mainImage" accept="image/png" required>
+    <label for="mainImage">Main Image</label>
+    <input type="file" id="mainImage" name="mainImage" accept="image/png" required>
     <span class="error-message" id="mainImage-error"></span>
 
-    <label for="extra-images">Extra Image</label>
+    <label for="extraImages">Extra Images</label>
     <input type="file" id="extraImages" name="extraImages" accept="image/png" multiple>
 
     <div class="side-container">
@@ -45,44 +45,50 @@
 
     <input type="number" id="discount" name="discount" step="0.01" placeholder="Discount">
 
-    <div class="input-group" for="activated">
+    <div class="input-group">
       <div class="right-container">
-        <label class="group-label">Activated</label>
+        <label class="group-label">Enable</label>
         <div class="radio-input">
           <label>
-            <input value="true" name="activated" id="activated" type="radio" />
+            <input value="true" name="enable" type="radio" />
             <span>Yes</span>
           </label>
           <label>
-            <input value="false" name="activated" id="activated" type="radio" />
+            <input value="false" name="enable" type="radio" />
             <span>No</span>
           </label>
-          <span class="selection"></span>
-        </div>
-      </div>
-
-    </div>
-    <div class="input-group" for="inStock">
-      <div class="right-container">
-        <label class="group-label">Stock</label>
-        <div class="radio-input">
-          <label>
-            <input value="true" name="inStock" id="inStock" type="radio" />
-            <span>Yes</span>
-          </label>
-          <label>
-            <input value="false" name="inStock" id="inStock" type="radio" />
-            <span>No</span>
-          </label>
-          <span class="selection"></span>
         </div>
       </div>
     </div>
 
+    <div class="input-group">
+      <div class="right-container">
+        <label class="group-label">In Stock</label>
+        <div class="radio-input">
+          <label>
+            <input value="true" name="inStock" type="radio" />
+            <span>Yes</span>
+          </label>
+          <label>
+            <input value="false" name="inStock" type="radio" />
+            <span>No</span>
+          </label>
+        </div>
+      </div>
+    </div>
 
-    <input type="text" id="dimensions" name="dimensions" placeholder="Dimensions Length x Width x Height (inch)">
-
-    <input type="number" id="weight" name="weight" step="0.01" placeholder="Weight (pounds)">
+    <div class="dimensions-container">
+      <h3>Dimensions</h3>
+      
+      <input type="number" id="length" name="length" step="0.01" placeholder="Length (e.g., cm)" required>
+      <input type="number" id="width" name="width" step="0.01" placeholder="Width (e.g., cm)" required>
+      <input type="number" id="height" name="height" step="0.01" placeholder="Height (e.g., cm)" required>
+      <input type="number" id="weight" name="weight" step="0.01" placeholder="Weight (e.g., kg)" required>
+      
+      <input type="text" id="unit" name="unit" placeholder="Dimension Unit (e.g., cm)">
+      <input type="text" id="unitWeight" name="unitWeight" placeholder="Weight Unit (e.g., kg)">
+    </div>
+    
 
     <div id="details-container">
       <div class="detail-row">
@@ -96,11 +102,9 @@
       <button type="button" id="return-btn" onclick="returnPage()">Return</button>
       <button type="button" id="add-btn" onclick="addProduct()">Add Product</button>
     </div>
-
   </form>
 
-
-  <script src="/BlueVelvet/static/script/add.js"></script>
+  <script src="/static/script/add.js"></script>
 </body>
 
 </html>

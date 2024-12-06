@@ -10,7 +10,7 @@ window.onload = function () {
 
         if (!currentUser || currentUser.role !== "admin") {
             showError("Only administrators can access this page.");
-            window.location.href = "/BlueVelvet/template/admin-login.html"; // Redireciona para a página de login de administrador
+            window.location.href = "/template/admin-login.html"; // Redireciona para a página de login de administrador
         }
     }
 };
@@ -29,7 +29,7 @@ document.getElementById('adminLoginForm').addEventListener('submit', function (e
     if (user && user.role === "admin") {
         // Autentica e redireciona para a página de registro
         localStorage.setItem('currentUserEmail', email);
-        window.location.href = "/BlueVelvet/template/register.html";
+        window.location.href = "/template/register.html";
     } else {
         document.getElementById('adminErrorMessage').textContent = "Incorrect credentials or the user is not an administrator. Please try again.";
     }

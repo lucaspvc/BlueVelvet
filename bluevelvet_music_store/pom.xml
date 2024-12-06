@@ -11,7 +11,6 @@
 	<groupId>com.api</groupId>
 	<artifactId>bluevelvet_music_store</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<product_name>bluevelvet_music_store</product_name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>

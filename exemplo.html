@@ -1,0 +1,74 @@
+html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Produto</title>
+    <script>
+        async function enviarProduto() {
+            const data = {
+                "productName": "Exemplo de Produto2",
+                "shortDescription": "Descrição curta do produto.",
+                "fullDescription": "Descrição completa do produto, incluindo detalhes importantes.",
+                "brand": "Marca Exemplo",
+                "category": "Categoria Exemplo",
+                "mainImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHCAYAAAAvZezQAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYSURBVBhXY+Tn5//PgASYoDQc0ECAgQEAitYBOhOAU/4AAAAASUVORK5CYII=",
+                "featuredImages": [
+                    {
+                        "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHCAYAAAAvZezQAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYSURBVBhXY+Tn5//PgASYoDQc0ECAgQEAitYBOhOAU/4AAAAASUVORK5CYII="
+                    },
+                    {
+                        "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHCAYAAAAvZezQAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYSURBVBhXY+Tn5//PgASYoDQc0ECAgQEAitYBOhOAU/4AAAAASUVORK5CYII="
+                    }
+                ],
+                "price": 199.99,
+                "discount": 19.99,
+                "enabled": true,
+                "inStock": true,
+                "dimensions": {
+                    "length": 30.0,
+                    "width": 10.0,
+                    "height": 20.0,
+                    "weight": 1.5,
+                    "unit": "cm",
+                    "unitWeight": "kg"
+                },
+                "details": [
+                    {
+                        "name": "Cor",
+                        "value": "Vermelho"
+                    },
+                    {
+                        "name": "Tamanho",
+                        "value": "M"
+                    }
+                ]
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/produtos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Success:', result);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Enviar Produto</h1>
+    <button onclick="enviarProduto()">Enviar Produto</button>
+</body>
+</html>
